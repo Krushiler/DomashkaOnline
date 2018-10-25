@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "996448382125",
+    "firebase_url": "https://domashka2-13c64.firebaseio.com",
+    "project_id": "domashka2-13c64",
+    "storage_bucket": "domashka2-13c64.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996448382125:android:c765864402bc7e08",
+        "android_client_info": {
+          "package_name": "com.example.krushiler.domashka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "996448382125-1qh52rbjkg0ikug5usgarlm7r0bds0tq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.krushiler.domashka",
+            "certificate_hash": "0573f20e9b54515dc5d448a5dbe76fb7cd799e84"
+          }
+        },
+        {
+          "client_id": "996448382125-fn24jjhppl32n5qt6d40qk45kkk4f4i5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdgqW4s6P6WvgiU694U1vlrkA-llY73F8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "996448382125-fn24jjhppl32n5qt6d40qk45kkk4f4i5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Domashka</string>
+    <string-array name="subjects">
+        <item>                        </item>
+        <item>Русский язык</item>
+        <item>Литература</item>
+        <item>Алгебра</item>
+        <item>Геометрия</item>
+        <item>Физика</item>
+        <item>Биология</item>
+        <item>География</item>
+        <item>История</item>
+        <item>Обществознание</item>
+        <item>Химия</item>
+        <item>Музыка</item>
+        <item>Физ-ра</item>
+        <item>ОБЖ</item>
+        <item>Английский язык</item>
+        <item>Информатика</item>
+        <item>Технология</item>
+        <item>Черчение</item>
+        <item>Астрономия</item>
+    </string-array>
+</resources>

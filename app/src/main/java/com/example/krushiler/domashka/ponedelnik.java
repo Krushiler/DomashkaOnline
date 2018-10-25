@@ -1,0 +1,621 @@
+package com.example.krushiler.domashka;
+
+import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.icu.util.Calendar;
+import android.os.Build;
+import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
+
+public class ponedelnik extends AppCompatActivity {
+    LinearLayout ponl, vtl, srl, chtl, ptl, sbl, linear, raspisanie, zvonkilay;
+    LinearLayout[] layouts = new LinearLayout[6];
+    RadioButton bpn, bvt, bsr, bcht, bpt, bsb;
+    Toolbar toolbar;
+    RadioButton[] buttons = new RadioButton[6];
+    Spinner sp[]=new Spinner[42];
+    EditText et[] = new EditText[42];
+    TextView zs[] = new TextView[16];
+
+    int DIALOG_TIME = 1;
+    int myHour = 0;
+    int myMinute = 0;
+
+    SharedPreferences[] sPref = new SharedPreferences[et.length];
+    SharedPreferences[] szsPref = new SharedPreferences[zs.length];
+    SharedPreferences[] spPref = new SharedPreferences[sp.length];
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_ponedelnik);
+        Calendar calendar = Calendar.getInstance();
+        et[0]=(EditText) findViewById(R.id.editText3);
+        et[1]=(EditText) findViewById(R.id.editText5);
+        et[2]=(EditText) findViewById(R.id.editText7);
+        et[3]=(EditText) findViewById(R.id.editText9);
+        et[4]=(EditText) findViewById(R.id.editText11);
+        et[5]=(EditText) findViewById(R.id.editText13);
+        et[6]=(EditText) findViewById(R.id.editText15);
+        et[7]=(EditText) findViewById(R.id.editText17);
+        et[8]=(EditText) findViewById(R.id.editText19);
+        et[9]=(EditText) findViewById(R.id.editText21);
+        et[10]=(EditText) findViewById(R.id.editText23);
+        et[11]=(EditText) findViewById(R.id.editText25);
+        et[12]=(EditText) findViewById(R.id.editText27);
+        et[13]=(EditText) findViewById(R.id.editText29);
+        et[14]=(EditText) findViewById(R.id.editText31);
+        et[15]=(EditText) findViewById(R.id.editText33);
+        et[16]=(EditText) findViewById(R.id.editText35);
+        et[17]=(EditText) findViewById(R.id.editText37);
+        et[18]=(EditText) findViewById(R.id.editText39);
+        et[19]=(EditText) findViewById(R.id.editText41);
+        et[20]=(EditText) findViewById(R.id.editText43);
+        et[21]=(EditText) findViewById(R.id.editText45);
+        et[22]=(EditText) findViewById(R.id.editText47);
+        et[23]=(EditText) findViewById(R.id.editText49);
+        et[24]=(EditText) findViewById(R.id.editText51);
+        et[25]=(EditText) findViewById(R.id.editText53);
+        et[26]=(EditText) findViewById(R.id.editText55);
+        et[27]=(EditText) findViewById(R.id.editText57);
+        et[28]=(EditText) findViewById(R.id.editText59);
+        et[29]=(EditText) findViewById(R.id.editText61);
+        et[30]=(EditText) findViewById(R.id.editText63);
+        et[31]=(EditText) findViewById(R.id.editText65);
+        et[32]=(EditText) findViewById(R.id.editText67);
+        et[33]=(EditText) findViewById(R.id.editText69);
+        et[34]=(EditText) findViewById(R.id.editText71);
+        et[35]=(EditText) findViewById(R.id.editText73);
+        et[36]=(EditText) findViewById(R.id.editText75);
+        et[37]=(EditText) findViewById(R.id.editText77);
+        et[38]=(EditText) findViewById(R.id.editText79);
+        et[39]=(EditText) findViewById(R.id.editText81);
+        et[40]=(EditText) findViewById(R.id.editText83);
+        et[41]=(EditText) findViewById(R.id.editText85);
+
+        sp[0]=(Spinner) findViewById(R.id.spinner1);
+        sp[1]=(Spinner) findViewById(R.id.spinner2);
+        sp[2]=(Spinner) findViewById(R.id.spinner3);
+        sp[3]=(Spinner) findViewById(R.id.spinner4);
+        sp[4]=(Spinner) findViewById(R.id.spinner5);
+        sp[5]=(Spinner) findViewById(R.id.spinner6);
+        sp[6]=(Spinner) findViewById(R.id.spinner7);
+        sp[7]=(Spinner) findViewById(R.id.spinner8);
+        sp[8]=(Spinner) findViewById(R.id.spinner9);
+        sp[9]=(Spinner) findViewById(R.id.spinner10);
+        sp[10]=(Spinner) findViewById(R.id.spinner11);
+        sp[11]=(Spinner) findViewById(R.id.spinner12);
+        sp[12]=(Spinner) findViewById(R.id.spinner13);
+        sp[13]=(Spinner) findViewById(R.id.spinner14);
+        sp[14]=(Spinner) findViewById(R.id.spinner15);
+        sp[15]=(Spinner) findViewById(R.id.spinner16);
+        sp[16]=(Spinner) findViewById(R.id.spinner17);
+        sp[17]=(Spinner) findViewById(R.id.spinner18);
+        sp[18]=(Spinner) findViewById(R.id.spinner19);
+        sp[19]=(Spinner) findViewById(R.id.spinner20);
+        sp[20]=(Spinner) findViewById(R.id.spinner21);
+        sp[21]=(Spinner) findViewById(R.id.spinner22);
+        sp[22]=(Spinner) findViewById(R.id.spinner23);
+        sp[23]=(Spinner) findViewById(R.id.spinner24);
+        sp[24]=(Spinner) findViewById(R.id.spinner25);
+        sp[25]=(Spinner) findViewById(R.id.spinner26);
+        sp[26]=(Spinner) findViewById(R.id.spinner27);
+        sp[27]=(Spinner) findViewById(R.id.spinner28);
+        sp[28]=(Spinner) findViewById(R.id.spinner29);
+        sp[29]=(Spinner) findViewById(R.id.spinner30);
+        sp[30]=(Spinner) findViewById(R.id.spinner31);
+        sp[31]=(Spinner) findViewById(R.id.spinner32);
+        sp[32]=(Spinner) findViewById(R.id.spinner33);
+        sp[33]=(Spinner) findViewById(R.id.spinner34);
+        sp[34]=(Spinner) findViewById(R.id.spinner35);
+        sp[35]=(Spinner) findViewById(R.id.spinner36);
+        sp[36]=(Spinner) findViewById(R.id.spinner37);
+        sp[37]=(Spinner) findViewById(R.id.spinner38);
+        sp[38]=(Spinner) findViewById(R.id.spinner39);
+        sp[39]=(Spinner) findViewById(R.id.spinner40);
+        sp[40]=(Spinner) findViewById(R.id.spinner41);
+        sp[41]=(Spinner) findViewById(R.id.spinner42);
+
+        zs[0]=(TextView) findViewById(R.id.time1);
+        zs[1]=(TextView) findViewById(R.id.time11);
+        zs[2]=(TextView) findViewById(R.id.time2);
+        zs[3]=(TextView) findViewById(R.id.time22);
+        zs[4]=(TextView) findViewById(R.id.time3);
+        zs[5]=(TextView) findViewById(R.id.time33);
+        zs[6]=(TextView) findViewById(R.id.time4);
+        zs[7]=(TextView) findViewById(R.id.time44);
+        zs[8]=(TextView) findViewById(R.id.time5);
+        zs[9]=(TextView) findViewById(R.id.time55);
+        zs[10]=(TextView) findViewById(R.id.time6);
+        zs[11]=(TextView) findViewById(R.id.time66);
+        zs[12]=(TextView) findViewById(R.id.time7);
+        zs[13]=(TextView) findViewById(R.id.time77);
+        zs[14]=(TextView) findViewById(R.id.time8);
+        zs[15]=(TextView) findViewById(R.id.time88);
+
+        ponl=(LinearLayout) findViewById(R.id.ponl);
+        vtl=(LinearLayout) findViewById(R.id.vtl);
+        srl=(LinearLayout) findViewById(R.id.srl);
+        chtl=(LinearLayout) findViewById(R.id.chtl);
+        ptl=(LinearLayout) findViewById(R.id.ptl);
+        sbl=(LinearLayout) findViewById(R.id.sbl);
+        bpn=(RadioButton) findViewById(R.id.pn);
+        bvt=(RadioButton) findViewById(R.id.vt);
+        bsr=(RadioButton) findViewById(R.id.sr);
+        bcht=(RadioButton) findViewById(R.id.cht);
+        bpt=(RadioButton) findViewById(R.id.pt);
+        bsb=(RadioButton) findViewById(R.id.sb);
+        zvonkilay = (LinearLayout) findViewById(R.id.zvonoklayout);
+        linear=(LinearLayout) findViewById(R.id.linear);
+        raspisanie=(LinearLayout) findViewById(R.id.raspisanie);
+        buttons[0]=bpn;
+        buttons[1]=bvt;
+        buttons[2]=bsr;
+        buttons[3]=bcht;
+        buttons[4]=bpt;
+        buttons[5]=bsb;
+        layouts[0]=ponl;
+        layouts[1]=vtl;
+        layouts[2]=srl;
+        layouts[3]=chtl;
+        layouts[4]=ptl;
+        layouts[5]=sbl;
+        toolbar=(Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        int n = calendar.get(Calendar.DAY_OF_WEEK);
+        String[] array = getResources().getStringArray(R.array.subjects);
+        ArrayAdapter<String> adapter =new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, array);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        for (int i = 0; i < sp.length; i++) {
+            sp[i].setAdapter(adapter);
+        }
+        loadText();
+        for (int i = 0; i < zs.length; i++) {
+            zs[i].setTextSize(25);
+            zs[i].setTextColor(Color.BLACK);
+            if(zs[i].getText().toString().equals("")){
+                zs[i].setText("--.--");
+            }
+        }
+        View.OnClickListener[] listeners = new View.OnClickListener[6];
+        listeners[0] = lispon;
+        listeners[1] = lisvt;
+        listeners[2] = lissr;
+        listeners[3] = lischt;
+        listeners[4] = lispt;
+        listeners[5] = lissb;
+        if (n!=1) {
+            layouts[n - 2].setVisibility(View.VISIBLE);
+            bpn.setChecked(true);
+            bpn.setTextColor(Color.RED);
+            linear.setVisibility(View.VISIBLE);
+            if(n==2){
+                bpn.setText("ПН");
+                bvt.setText("ВТ");
+                bsr.setText("СР");
+                bcht.setText("ЧТ");
+                bpt.setText("ПТ");
+                bsb.setText("СБ");
+                for (int i = 0; i < 6; i++) {
+                    buttons[i].setOnClickListener(listeners[i]);
+                }
+            }
+            else if (n==3){
+                bpn.setText("ВТ");
+                bvt.setText("СР");
+                bsr.setText("ЧТ");
+                bcht.setText("ПТ");
+                bpt.setText("СБ");
+                bsb.setText("ПН");
+                bsb.setTextColor(Color.BLUE);
+                for (int i = 0; i < 6; i++) {
+                    if(i<5) {
+                        buttons[i].setOnClickListener(listeners[i + 1]);
+                    }
+                    else {
+                        buttons[5].setOnClickListener(listeners[0]);
+                    }
+                }
+            }
+            else if(n==4){
+                bpn.setText("СР");
+                bvt.setText("ЧТ");
+                bsr.setText("ПТ");
+                bcht.setText("СБ");
+                bpt.setText("ПН");
+                bsb.setText("ВТ");
+                bpt.setTextColor(Color.BLUE);
+                bsb.setTextColor(Color.BLUE);
+                for (int i = 0; i < 6; i++) {
+                    if(i<4) {
+                        buttons[i].setOnClickListener(listeners[i + 2]);
+                    }
+                    else {
+                        buttons[4].setOnClickListener(listeners[0]);
+                        buttons[5].setOnClickListener(listeners[1]);
+                    }
+                }
+            }
+            else if(n==5){
+                bpn.setText("ЧТ");
+                bvt.setText("ПТ");
+                bsr.setText("СБ");
+                bcht.setText("ПН");
+                bpt.setText("ВТ");
+                bsb.setText("СР");
+                bpt.setTextColor(Color.BLUE);
+                bcht.setTextColor(Color.BLUE);
+                bsb.setTextColor(Color.BLUE);
+                for (int i = 0; i < 6; i++) {
+                    if(i<3) {
+                        buttons[i].setOnClickListener(listeners[i + 3]);
+                    }
+                    else {
+                        buttons[3].setOnClickListener(listeners[0]);
+                        buttons[4].setOnClickListener(listeners[1]);
+                        buttons[5].setOnClickListener(listeners[2]);
+                    }
+                }
+            }
+            else if(n==6){
+                bpn.setText("ПТ");
+                bvt.setText("СБ");
+                bsr.setText("ПН");
+                bcht.setText("ВТ");
+                bpt.setText("СР");
+                bsb.setText("ЧТ");
+                bsr.setTextColor(Color.BLUE);
+                bcht.setTextColor(Color.BLUE);
+                bpt.setTextColor(Color.BLUE);
+                bsb.setTextColor(Color.BLUE);
+                for (int i = 0; i < 6; i++) {
+                    if(i<2) {
+                        buttons[i].setOnClickListener(listeners[i + 4]);
+                    }
+                    else {
+                        buttons[2].setOnClickListener(listeners[0]);
+                        buttons[3].setOnClickListener(listeners[1]);
+                        buttons[4].setOnClickListener(listeners[2]);
+                        buttons[5].setOnClickListener(listeners[3]);
+                    }
+                }
+            }
+            else if(n==7){
+                bpn.setText("СБ");
+                bvt.setText("ПН");
+                bsr.setText("ВТ");
+                bcht.setText("СР");
+                bpt.setText("ЧТ");
+                bsb.setText("ПТ");
+                bvt.setTextColor(Color.BLUE);
+                bsr.setTextColor(Color.BLUE);
+                bcht.setTextColor(Color.BLUE);
+                bpt.setTextColor(Color.BLUE);
+                bsb.setTextColor(Color.BLUE);
+                for (int i = 0; i < 6; i++) {
+                    if(i<1) {
+                        buttons[i].setOnClickListener(listeners[i + 5]);
+                    }
+                    else {
+                        buttons[1].setOnClickListener(listeners[0]);
+                        buttons[2].setOnClickListener(listeners[1]);
+                        buttons[3].setOnClickListener(listeners[2]);
+                        buttons[4].setOnClickListener(listeners[3]);
+                        buttons[5].setOnClickListener(listeners[4]);
+                    }
+                }
+            }
+        }
+        else  {
+            findViewById(R.id.vihodnoy).setVisibility(View.VISIBLE);
+            for (int i = 0; i < 6; i++) {
+                buttons[i].setOnClickListener(listeners[i]);
+            }
+        }
+    }
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id==R.id.oproge){
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("О программе");
+            alertDialog.setMessage("Данная программа является дневником для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n\n\n\nbuild 1.1");
+            alertDialog.setPositiveButton("Закрыть", null);
+            alertDialog.show();
+        }
+        if(id==R.id.zvonki){
+            zvonkilay.setVisibility(View.VISIBLE);
+            ponl.setVisibility(View.GONE);
+            vtl.setVisibility(View.GONE);
+            srl.setVisibility(View.GONE);
+            chtl.setVisibility(View.GONE);
+            ptl.setVisibility(View.GONE);
+            sbl.setVisibility(View.GONE);
+            linear.setVisibility(View.GONE);
+            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+        }
+        if(id==R.id.deleteDZ){
+            onClickDeleteDZ();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void saveText() {
+        SharedPreferences.Editor[] ed = new SharedPreferences.Editor[et.length];
+        SharedPreferences.Editor[] zed = new SharedPreferences.Editor[zs.length];
+        SharedPreferences.Editor[] sed = new SharedPreferences.Editor[sp.length];
+        int selectedString[] = new int[sp.length];
+        for (int i = 0; i < et.length; i++) {
+            sPref[i] = getSharedPreferences("MyPref" + i, MODE_PRIVATE);
+            ed[i] = sPref[i].edit();
+        }
+        for (int i = 0; i < zs.length; i++) {
+            szsPref[i] = getSharedPreferences("ZyPref" + i, MODE_PRIVATE);
+            zed[i] = szsPref[i].edit();
+        }
+        for (int i = 0; i < sp.length; i++) {
+            spPref[i] = getSharedPreferences("SyPref" + i, MODE_PRIVATE);
+            sed[i] = spPref[i].edit();
+            selectedString[i] = sp[i].getSelectedItemPosition();
+        }
+
+        //PUT
+        for (int i = 0; i < et.length; i++) {
+            ed[i].putString("3"+i, et[i].getText().toString());
+        }
+
+        for (int i = 0; i < zs.length; i++) {
+            zed[i].putString("2"+i, zs[i].getText().toString());
+        }
+
+        for (int i = 0; i < sp.length; i++) {
+            sed[i].putInt("1"+i, selectedString[i]);
+        }
+
+        //COMMITS
+        for (int i = 0; i < et.length; i++) {
+            ed[i].commit();
+        }
+        for (int i = 0; i < zs.length; i++) {
+            zed[i].commit();
+        }
+        for (int i = 0; i < sp.length; i++) {
+            sed[i].commit();
+        }
+        }
+
+
+    private void loadText() {
+        String savedText[] = new String[et.length];
+        String zavedText[] = new String[zs.length];
+        int pavedText[] = new int[sp.length];
+        for (int i = 0; i < et.length; i++) {
+            sPref[i] = getSharedPreferences("MyPref" + i, MODE_PRIVATE);
+        }
+        for (int i = 0; i < zs.length; i++) {
+            szsPref[i] = getSharedPreferences("ZyPref" + i, MODE_PRIVATE);
+        }
+        for (int i = 0; i < sp.length; i++) {
+            spPref[i] = getSharedPreferences("SyPref" + i, MODE_PRIVATE);
+        }
+
+        for (int i = 0; i < et.length; i++) {
+            savedText[i] = sPref[i].getString("3"+i, "");
+        }
+
+        for (int i = 0; i < zs.length; i++) {
+            zavedText[i] = szsPref[i].getString("2"+i, "");
+        }
+
+
+        for (int i = 0; i < sp.length; i++) {
+            pavedText[i] = spPref[i].getInt("1"+i, 0);
+        }
+
+        for (int i = 0; i < et.length; i++) {
+            et[i].setText(savedText[i]);
+        }
+        for (int i = 0; i < zs.length; i++) {
+            zs[i].setText(zavedText[i]);
+        }
+        for (int i = 0; i < sp.length; i++) {
+            sp[i].setSelection(pavedText[i]);
+        }
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        saveText();
+    }
+    TextView tv;
+    public void onclick(View view) {
+        showDialog(DIALOG_TIME);
+        tv =(TextView) findViewById(view.getId());
+    }
+
+    protected Dialog onCreateDialog(int id) {
+        if (id == DIALOG_TIME) {
+            TimePickerDialog tpd = new TimePickerDialog(this, myCallBack, myHour, myMinute, true);
+            return tpd;
+        }
+        return super.onCreateDialog(id);
+    }
+
+    TimePickerDialog.OnTimeSetListener myCallBack = new TimePickerDialog.OnTimeSetListener() {
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            myHour = hourOfDay;
+            myMinute = minute;
+            tv.setText(myHour + ":" + myMinute);
+            hourOfDay = 0;
+            minute = 0;
+        }
+    };
+
+    private View.OnClickListener lispon = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            for(int i = 0; i < layouts.length; i++){
+                layouts[i].setVisibility(View.GONE);
+            }
+            ponl.setVisibility(View.VISIBLE);
+            linear.setVisibility(View.VISIBLE);
+            zvonkilay.setVisibility(View.GONE);
+            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+        }
+    };
+    private View.OnClickListener lisvt = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            for(int i = 0; i < layouts.length; i++){
+                layouts[i].setVisibility(View.GONE);
+            }
+            vtl.setVisibility(View.VISIBLE);
+            linear.setVisibility(View.VISIBLE);
+            zvonkilay.setVisibility(View.GONE);
+            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+        }
+    };
+    private View.OnClickListener lissr = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            for(int i = 0; i < layouts.length; i++){
+                layouts[i].setVisibility(View.GONE);
+            }
+            srl.setVisibility(View.VISIBLE);
+            linear.setVisibility(View.VISIBLE);
+            zvonkilay.setVisibility(View.GONE);
+            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+        }
+    };
+    private View.OnClickListener lischt = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            for(int i = 0; i < layouts.length; i++){
+                layouts[i].setVisibility(View.GONE);
+            }
+            chtl.setVisibility(View.VISIBLE);
+            linear.setVisibility(View.VISIBLE);
+            zvonkilay.setVisibility(View.GONE);
+            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+        }
+    };
+    private View.OnClickListener lispt = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            for(int i = 0; i < layouts.length; i++){
+                layouts[i].setVisibility(View.GONE);
+            }
+            ptl.setVisibility(View.VISIBLE);
+            linear.setVisibility(View.VISIBLE);
+            zvonkilay.setVisibility(View.GONE);
+            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+        }
+    };
+    private View.OnClickListener lissb = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            for(int i = 0; i < layouts.length; i++){
+                layouts[i].setVisibility(View.GONE);
+            }
+            sbl.setVisibility(View.VISIBLE);
+            linear.setVisibility(View.VISIBLE);
+            zvonkilay.setVisibility(View.GONE);
+            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+        }
+    };
+
+    public void onClickDeleteDZ(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ponedelnik.this);
+
+        alertDialog.setTitle("Подтвердить удаление...");
+
+        alertDialog.setMessage("Вы уверены, что хотите  удалить ДЗ на этот день?");
+
+        alertDialog.setIcon(R.drawable.rubbish_bin);
+
+        alertDialog.setPositiveButton("ДА", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int which) {
+                if(ponl.getVisibility() == View.VISIBLE){
+                    for (int i = 0; i < 7; i++) {
+                            et[i].setText("");
+                            saveText();
+                    }
+                }
+                else if(vtl.getVisibility() == View.VISIBLE){
+                    for (int i = 7; i < 14; i++) {
+                            et[i].setText("");
+                            saveText();
+                    }
+                }
+                else if(srl.getVisibility() == View.VISIBLE){
+                    for (int i = 14; i < 21; i++) {
+                            et[i].setText("");
+                            saveText();
+                    }
+                }
+                else if(chtl.getVisibility() == View.VISIBLE){
+                    for (int i = 21; i < 28; i++) {
+                            et[i].setText("");
+                            saveText();
+                    }
+                }
+                else if(ptl.getVisibility() == View.VISIBLE){
+                    for (int i = 28; i < 35; i++) {
+                            et[i].setText("");
+                            saveText();
+                    }
+                }
+                else if(sbl.getVisibility() == View.VISIBLE){
+                    for (int i = 35; i < 42; i++) {
+                            et[i].setText("");
+                            saveText();
+                    }
+                }
+                Toast.makeText(getApplicationContext(), "ДЗ удалены", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        alertDialog.setNegativeButton("НЕТ", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                Toast.makeText(getApplicationContext(), "Вы нажали НЕТ", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+
+        alertDialog.show();
+    }
+}
