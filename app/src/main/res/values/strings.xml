@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Domashka</string>
+    <string name="subjectNameInFirebase">Subjects</string>
+    <string name="homeworkNameInFirebase">Homework</string>
+    <string name="timeNameInFirebase">Time</string>
     <string-array name="subjects">
         <item>                        </item>
         <item>Русский язык</item>

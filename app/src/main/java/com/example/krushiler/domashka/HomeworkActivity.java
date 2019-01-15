@@ -6,10 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
 import android.os.Build;
-import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -28,7 +26,17 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-public class ponedelnik extends AppCompatActivity {
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
+
+public class HomeworkActivity extends AppCompatActivity {
     LinearLayout ponl, vtl, srl, chtl, ptl, sbl, linear, raspisanie, zvonkilay;
     LinearLayout[] layouts = new LinearLayout[6];
     RadioButton bpn, bvt, bsr, bcht, bpt, bsb;
@@ -46,13 +54,34 @@ public class ponedelnik extends AppCompatActivity {
     SharedPreferences[] szsPref = new SharedPreferences[zs.length];
     SharedPreferences[] spPref = new SharedPreferences[sp.length];
 
+    private FirebaseAuth mAuth;
+    private DatabaseReference myRef;
+    private List<String> databaseHomework;
+    private List<Integer> databaseSubjects;
+    private List<String> databaseTime;
+
+    FirebaseUser user = mAuth.getInstance().getCurrentUser();
+
+    ArrayAdapter<CharSequence> adapter;
+
+    String userStatus;
+
+    String editorCode;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ponedelnik);
+        setContentView(R.layout.activity_homework);
         Calendar calendar = Calendar.getInstance();
+
+        Intent intent = getIntent();
+        userStatus = intent.getStringExtra("userStatus");
+        editorCode = intent.getStringExtra("editorCode");
+
+        myRef = FirebaseDatabase.getInstance().getReference();
+
         et[0]=(EditText) findViewById(R.id.editText3);
         et[1]=(EditText) findViewById(R.id.editText5);
         et[2]=(EditText) findViewById(R.id.editText7);
@@ -183,16 +212,18 @@ public class ponedelnik extends AppCompatActivity {
         layouts[3]=chtl;
         layouts[4]=ptl;
         layouts[5]=sbl;
+
         toolbar=(Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         int n = calendar.get(Calendar.DAY_OF_WEEK);
         String[] array = getResources().getStringArray(R.array.subjects);
-        ArrayAdapter<String> adapter =new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, array);
+        adapter =new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, array);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         for (int i = 0; i < sp.length; i++) {
             sp[i].setAdapter(adapter);
         }
         loadText();
+
         for (int i = 0; i < zs.length; i++) {
             zs[i].setTextSize(25);
             zs[i].setTextColor(Color.BLACK);
@@ -341,7 +372,11 @@ public class ponedelnik extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        if (userStatus.equals("editor")) {
+            getMenuInflater().inflate(R.menu.menu, menu);
+        }else{
+            getMenuInflater().inflate(R.menu.nonadminmenu, menu);
+        }
         return true;
     }
 
@@ -351,7 +386,7 @@ public class ponedelnik extends AppCompatActivity {
         if(id==R.id.oproge){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("О программе");
-            alertDialog.setMessage("Данная программа является дневником для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n\n\n\nbuild 1.1");
+            alertDialog.setMessage("Данная программа является дневником для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n\n\n\nbuild 1.2");
             alertDialog.setPositiveButton("Закрыть", null);
             alertDialog.show();
         }
@@ -369,90 +404,74 @@ public class ponedelnik extends AppCompatActivity {
         if(id==R.id.deleteDZ){
             onClickDeleteDZ();
         }
+        if(id==R.id.exit){
+            /*Intent intent = new Intent(this, AutentificationActivity.class);
+            intent.putExtra("status", "NO");
+            startActivity(intent);*/
+            finish();
+        }
+        if(id==R.id.confirm){
+            saveText();
+        }
         return super.onOptionsItemSelected(item);
     }
 
     private void saveText() {
-        SharedPreferences.Editor[] ed = new SharedPreferences.Editor[et.length];
-        SharedPreferences.Editor[] zed = new SharedPreferences.Editor[zs.length];
-        SharedPreferences.Editor[] sed = new SharedPreferences.Editor[sp.length];
-        int selectedString[] = new int[sp.length];
-        for (int i = 0; i < et.length; i++) {
-            sPref[i] = getSharedPreferences("MyPref" + i, MODE_PRIVATE);
-            ed[i] = sPref[i].edit();
+        if (userStatus.equals("editor")) {
+            for (int i = 0; i < et.length; i++) {
+                myRef.child(user.getUid()).child("Homework" + i).setValue(et[i].getText().toString());
+            }
+            for (int i = 0; i < sp.length; i++) {
+                myRef.child(user.getUid()).child("Subjects" + i).setValue(sp[i].getSelectedItemPosition());
+            }
+            for (int i = 0; i < zs.length; i++) {
+                if (zs[i].getText() == "" || zs[i].getText() == " ") {
+                    myRef.child(user.getUid()).child("time" + i).setValue("-|-");
+                } else {
+                    myRef.child(user.getUid()).child("time" + i).setValue(zs[i].getText().toString());
+                }
+            }
         }
-        for (int i = 0; i < zs.length; i++) {
-            szsPref[i] = getSharedPreferences("ZyPref" + i, MODE_PRIVATE);
-            zed[i] = szsPref[i].edit();
-        }
-        for (int i = 0; i < sp.length; i++) {
-            spPref[i] = getSharedPreferences("SyPref" + i, MODE_PRIVATE);
-            sed[i] = spPref[i].edit();
-            selectedString[i] = sp[i].getSelectedItemPosition();
-        }
-
-        //PUT
-        for (int i = 0; i < et.length; i++) {
-            ed[i].putString("3"+i, et[i].getText().toString());
-        }
-
-        for (int i = 0; i < zs.length; i++) {
-            zed[i].putString("2"+i, zs[i].getText().toString());
-        }
-
-        for (int i = 0; i < sp.length; i++) {
-            sed[i].putInt("1"+i, selectedString[i]);
-        }
-
-        //COMMITS
-        for (int i = 0; i < et.length; i++) {
-            ed[i].commit();
-        }
-        for (int i = 0; i < zs.length; i++) {
-            zed[i].commit();
-        }
-        for (int i = 0; i < sp.length; i++) {
-            sed[i].commit();
-        }
-        }
-
+    }
 
     private void loadText() {
         String savedText[] = new String[et.length];
         String zavedText[] = new String[zs.length];
         int pavedText[] = new int[sp.length];
-        for (int i = 0; i < et.length; i++) {
-            sPref[i] = getSharedPreferences("MyPref" + i, MODE_PRIVATE);
-        }
-        for (int i = 0; i < zs.length; i++) {
-            szsPref[i] = getSharedPreferences("ZyPref" + i, MODE_PRIVATE);
-        }
-        for (int i = 0; i < sp.length; i++) {
-            spPref[i] = getSharedPreferences("SyPref" + i, MODE_PRIVATE);
-        }
 
-        for (int i = 0; i < et.length; i++) {
-            savedText[i] = sPref[i].getString("3"+i, "");
-        }
+        myRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String s = ((CharSequence)dataSnapshot.child("EditorCode").getValue()).toString();
+                if (editorCode.equals(s)){
+                    userStatus = "editor";
+                }else{
+                    userStatus = "guest";
+                }
+                setSupportActionBar(toolbar);
+                for (int i = 0; i < et.length; i++) {
+                    et[i].setText((CharSequence) dataSnapshot.child("Homework" + i).getValue());
+                }
+                for (int i = 0; i < sp.length; i++) {
+                    if (dataSnapshot.child("Subjects" + i).getValue(Integer.class)!=null) {
+                        int position = dataSnapshot.child("Subjects" + i).getValue(Integer.class);
+                        sp[i].setSelection(position);
+                    }
+                }
+                for (int i = 0; i < zs.length; i++) {
+                    if ((CharSequence) dataSnapshot.child("time" + i).getValue() != "") {
+                        zs[i].setText((CharSequence) dataSnapshot.child("time" + i).getValue());
+                    }else{
+                        zs[i].setText("-|-");
+                    }
+                }
+            }
 
-        for (int i = 0; i < zs.length; i++) {
-            zavedText[i] = szsPref[i].getString("2"+i, "");
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-
-        for (int i = 0; i < sp.length; i++) {
-            pavedText[i] = spPref[i].getInt("1"+i, 0);
-        }
-
-        for (int i = 0; i < et.length; i++) {
-            et[i].setText(savedText[i]);
-        }
-        for (int i = 0; i < zs.length; i++) {
-            zs[i].setText(zavedText[i]);
-        }
-        for (int i = 0; i < sp.length; i++) {
-            sp[i].setSelection(pavedText[i]);
-        }
+            }
+        });
     }
     @Override
     protected void onStop() {
@@ -557,7 +576,7 @@ public class ponedelnik extends AppCompatActivity {
     };
 
     public void onClickDeleteDZ(){
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ponedelnik.this);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(HomeworkActivity.this);
 
         alertDialog.setTitle("Подтвердить удаление...");
 

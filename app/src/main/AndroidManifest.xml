@@ -9,7 +9,8 @@
         android:roundIcon="@drawable/coffeex"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SplashActivity"
+        <activity
+            android:name=".SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -18,8 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ponedelnik"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".HomeworkActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".AutentificationActivity"></activity>
     </application>
 
 </manifest>
