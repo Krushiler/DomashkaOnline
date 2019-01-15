@@ -62,9 +62,11 @@ public class AutentificationActivity extends AppCompatActivity {
         ETemail.setText(savedText1);
         ETpassword.setText(savedText2);
         ETeditor.setText(savedText3);
+
         if (needEnter != "NO" && savedText1 != "" && savedText2 != ""){
             signin(ETemail.getText().toString(), ETpassword.getText().toString());
         }else{}
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
