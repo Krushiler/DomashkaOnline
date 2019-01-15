@@ -445,8 +445,38 @@ public class HomeworkActivity extends AppCompatActivity {
                 String s = ((CharSequence)dataSnapshot.child("EditorCode").getValue()).toString();
                 if (editorCode.equals(s)){
                     userStatus = "editor";
+                    for (int i = 0; i < sp.length; i ++){
+                        sp[i].setClickable(true);
+                        sp[i].setFocusable(true);
+                        sp[i].setFocusableInTouchMode(true);
+                    }
+                    for (int i = 0; i < et.length; i ++){
+                        et[i].setClickable(true);
+                        et[i].setFocusable(true);
+                        et[i].setFocusableInTouchMode(true);
+                    }
+                    for (int i = 0; i < zs.length; i ++){
+                        zs[i].setClickable(true);
+                        zs[i].setFocusable(true);
+                        zs[i].setFocusableInTouchMode(true);
+                    }
                 }else{
                     userStatus = "guest";
+                    for (int i = 0; i < sp.length; i ++){
+                        sp[i].setClickable(false);
+                        sp[i].setFocusable(false);
+                        sp[i].setFocusableInTouchMode(false);
+                    }
+                    for (int i = 0; i < et.length; i ++){
+                        et[i].setClickable(false);
+                        et[i].setFocusable(false);
+                        et[i].setFocusableInTouchMode(false);
+                    }
+                    for (int i = 0; i < zs.length; i ++){
+                        zs[i].setClickable(false);
+                        zs[i].setFocusable(false);
+                        zs[i].setFocusableInTouchMode(false);
+                    }
                 }
                 setSupportActionBar(toolbar);
                 for (int i = 0; i < et.length; i++) {
