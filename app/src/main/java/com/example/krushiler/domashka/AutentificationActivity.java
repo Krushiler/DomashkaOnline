@@ -63,9 +63,9 @@ public class AutentificationActivity extends AppCompatActivity {
         ETpassword.setText(savedText2);
         ETeditor.setText(savedText3);
 
-        if (needEnter != "NO" && savedText1 != "" && savedText2 != ""){
+        /*if (needEnter != "NO" && savedText1 != "" && savedText2 != ""){
             signin(ETemail.getText().toString(), ETpassword.getText().toString());
-        }else{}
+        }else{}*/
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -116,7 +116,7 @@ public class AutentificationActivity extends AppCompatActivity {
 
     public void signin(String email, String password)
     {
-        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mAuth.signInWithEmailAndPassword(email + "@li1irk.ru",password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
@@ -146,13 +146,13 @@ public class AutentificationActivity extends AppCompatActivity {
                     intent.putExtra("editorCode", ETeditor.getText().toString());
                     startActivity(intent);
                 }else
-                    Toast.makeText(AutentificationActivity.this, "Неверная почта или пароль", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AutentificationActivity.this, "Неверный логин или пароль", Toast.LENGTH_SHORT).show();
 
             }
         });
     }
     public void registration (final String email , final String password){
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mAuth.createUserWithEmailAndPassword(email + "@li1irk.ru", password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful())
@@ -183,9 +183,13 @@ public class AutentificationActivity extends AppCompatActivity {
                     editorEditor.commit();
 
                     mAuth.signInWithEmailAndPassword(email, password);
+                    Intent intent = new Intent(AutentificationActivity.this, HomeworkActivity.class);
+                    intent.putExtra("userStatus", ETeditor.getText().toString());
+                    intent.putExtra("editorCode", ETeditor.getText().toString());
+                    startActivity(intent);
                 }
                 else
-                    Toast.makeText(AutentificationActivity.this, "Короткий пароль, или почта уже зарегестрирована", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AutentificationActivity.this, "Короткий пароль, или логин уже зарегестрирован", Toast.LENGTH_SHORT).show();
             }
         });
     }

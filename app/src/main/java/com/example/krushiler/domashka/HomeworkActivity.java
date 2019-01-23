@@ -185,6 +185,22 @@ public class HomeworkActivity extends AppCompatActivity {
         zs[14]=(TextView) findViewById(R.id.time8);
         zs[15]=(TextView) findViewById(R.id.time88);
 
+        for (int i = 0; i < sp.length; i ++){
+            sp[i].setClickable(false);
+            sp[i].setFocusable(false);
+            sp[i].setFocusableInTouchMode(false);
+        }
+        for (int i = 0; i < et.length; i ++){
+            et[i].setClickable(false);
+            et[i].setFocusable(false);
+            et[i].setFocusableInTouchMode(false);
+        }
+        for (int i = 0; i < zs.length; i ++){
+            zs[i].setClickable(false);
+            zs[i].setFocusable(false);
+            zs[i].setFocusableInTouchMode(false);
+        }
+
         ponl=(LinearLayout) findViewById(R.id.ponl);
         vtl=(LinearLayout) findViewById(R.id.vtl);
         srl=(LinearLayout) findViewById(R.id.srl);
@@ -386,7 +402,7 @@ public class HomeworkActivity extends AppCompatActivity {
         if(id==R.id.oproge){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("О программе");
-            alertDialog.setMessage("Данная программа является дневником для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n\n\n\nbuild 1.2");
+            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.2");
             alertDialog.setPositiveButton("Закрыть", null);
             alertDialog.show();
         }
@@ -405,10 +421,9 @@ public class HomeworkActivity extends AppCompatActivity {
             onClickDeleteDZ();
         }
         if(id==R.id.exit){
-            /*Intent intent = new Intent(this, AutentificationActivity.class);
+            Intent intent = new Intent(this, AutentificationActivity.class);
             intent.putExtra("status", "NO");
-            startActivity(intent);*/
-            finish();
+            startActivity(intent);
         }
         if(id==R.id.confirm){
             saveText();
@@ -618,38 +633,38 @@ public class HomeworkActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog,int which) {
                 if(ponl.getVisibility() == View.VISIBLE){
                     for (int i = 0; i < 7; i++) {
-                            et[i].setText("");
-                            saveText();
+                        et[i].setText("");
+                        saveText();
                     }
                 }
                 else if(vtl.getVisibility() == View.VISIBLE){
                     for (int i = 7; i < 14; i++) {
-                            et[i].setText("");
-                            saveText();
+                        et[i].setText("");
+                        saveText();
                     }
                 }
                 else if(srl.getVisibility() == View.VISIBLE){
                     for (int i = 14; i < 21; i++) {
-                            et[i].setText("");
-                            saveText();
+                        et[i].setText("");
+                        saveText();
                     }
                 }
                 else if(chtl.getVisibility() == View.VISIBLE){
                     for (int i = 21; i < 28; i++) {
-                            et[i].setText("");
-                            saveText();
+                        et[i].setText("");
+                        saveText();
                     }
                 }
                 else if(ptl.getVisibility() == View.VISIBLE){
                     for (int i = 28; i < 35; i++) {
-                            et[i].setText("");
-                            saveText();
+                        et[i].setText("");
+                        saveText();
                     }
                 }
                 else if(sbl.getVisibility() == View.VISIBLE){
                     for (int i = 35; i < 42; i++) {
-                            et[i].setText("");
-                            saveText();
+                        et[i].setText("");
+                        saveText();
                     }
                 }
                 Toast.makeText(getApplicationContext(), "ДЗ удалены", Toast.LENGTH_SHORT).show();
