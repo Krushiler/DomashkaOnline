@@ -8,4 +8,6 @@
 <color name="primary_dark_green">#388E3C</color>
 <color name="accent_green">#8BC34A</color>
 <color name="white">#BBBBBB</color>
+    <color name="disableColor">#000000</color>
+    <color name="enableColor">#000000</color>
 </resources>

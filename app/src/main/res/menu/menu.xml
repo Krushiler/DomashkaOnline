@@ -2,25 +2,35 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!--<item
+        android:id="@+id/subjectsrasp"
+        app:showAsAction="never"
+        android:title="Расписание"/>-->
     <item
         android:id="@+id/oproge"
         app:showAsAction="never"
-        android:title="О программе"/>
+        android:title="О программе" />
     <item
         android:id="@+id/zvonki"
         app:showAsAction="always"
         android:icon="@drawable/bell"
         android:title="Перемены" />
     <item
-        android:id="@+id/deleteDZ"
-        app:showAsAction="always"
-        android:icon="@drawable/rubbish_bin"
-        android:title="Удалить ДЗ" />
-    <item
         android:id="@+id/confirm"
         app:showAsAction="always"
         android:icon="@drawable/checkmark"
         android:title="Подтвердить" />
+    <item
+        android:id="@+id/deleteDZ"
+        app:showAsAction="always"
+        android:icon="@drawable/rubbish_bin"
+        android:title="Удалить ДЗ" />
+
+    <item
+        android:id="@+id/returnAll"
+        app:showAsAction="never"
+        android:title="Вернуть все изменения"
+        />
     <item
         android:id="@+id/exit"
         app:showAsAction="never"

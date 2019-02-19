@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -45,6 +46,9 @@ public class HomeworkActivity extends AppCompatActivity {
     Spinner sp[]=new Spinner[42];
     EditText et[] = new EditText[42];
     TextView zs[] = new TextView[16];
+    String homeworkstr[] = new String[42];
+    int spinnerint[] = new int[42];
+    String timestr[] = new String[16];
 
     int DIALOG_TIME = 1;
     int myHour = 0;
@@ -185,22 +189,6 @@ public class HomeworkActivity extends AppCompatActivity {
         zs[14]=(TextView) findViewById(R.id.time8);
         zs[15]=(TextView) findViewById(R.id.time88);
 
-        for (int i = 0; i < sp.length; i ++){
-            sp[i].setClickable(false);
-            sp[i].setFocusable(false);
-            sp[i].setFocusableInTouchMode(false);
-        }
-        for (int i = 0; i < et.length; i ++){
-            et[i].setClickable(false);
-            et[i].setFocusable(false);
-            et[i].setFocusableInTouchMode(false);
-        }
-        for (int i = 0; i < zs.length; i ++){
-            zs[i].setClickable(false);
-            zs[i].setFocusable(false);
-            zs[i].setFocusableInTouchMode(false);
-        }
-
         ponl=(LinearLayout) findViewById(R.id.ponl);
         vtl=(LinearLayout) findViewById(R.id.vtl);
         srl=(LinearLayout) findViewById(R.id.srl);
@@ -233,7 +221,7 @@ public class HomeworkActivity extends AppCompatActivity {
 
         int n = calendar.get(Calendar.DAY_OF_WEEK);
         String[] array = getResources().getStringArray(R.array.subjects);
-        adapter =new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, array);
+        adapter =new ArrayAdapter<CharSequence>(this, R.layout.spinner_item, array);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         for (int i = 0; i < sp.length; i++) {
             sp[i].setAdapter(adapter);
@@ -402,7 +390,7 @@ public class HomeworkActivity extends AppCompatActivity {
         if(id==R.id.oproge){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("О программе");
-            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.2");
+            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.1");
             alertDialog.setPositiveButton("Закрыть", null);
             alertDialog.show();
         }
@@ -426,8 +414,42 @@ public class HomeworkActivity extends AppCompatActivity {
             startActivity(intent);
         }
         if(id==R.id.confirm){
-            saveText();
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(HomeworkActivity.this);
+
+            alertDialog.setTitle("Сохранить изменения...");
+
+            alertDialog.setMessage("Вы уверены, что хотите сохранить изменения?");
+
+            alertDialog.setIcon(R.drawable.save);
+
+            alertDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    saveText();
+                }
+            });
+            alertDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alertDialog.show();
         }
+        if(id==R.id.returnAll){
+            for (int i = 0; i < sp.length; i ++){
+                sp[i].setSelection(spinnerint[i]);
+            }
+            for (int i = 0; i < et.length; i++){
+                et[i].setText(homeworkstr[i]);
+            }
+            for (int i = 0; i < zs.length; i ++){
+                zs[i].setText(timestr[i]);
+            }
+        }
+        /*if(id==R.id.subjectsrasp){
+
+        }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -450,9 +472,6 @@ public class HomeworkActivity extends AppCompatActivity {
     }
 
     private void loadText() {
-        String savedText[] = new String[et.length];
-        String zavedText[] = new String[zs.length];
-        int pavedText[] = new int[sp.length];
 
         myRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -461,51 +480,45 @@ public class HomeworkActivity extends AppCompatActivity {
                 if (editorCode.equals(s)){
                     userStatus = "editor";
                     for (int i = 0; i < sp.length; i ++){
-                        sp[i].setClickable(true);
-                        sp[i].setFocusable(true);
-                        sp[i].setFocusableInTouchMode(true);
+                        sp[i].setEnabled(true);
                     }
                     for (int i = 0; i < et.length; i ++){
-                        et[i].setClickable(true);
-                        et[i].setFocusable(true);
-                        et[i].setFocusableInTouchMode(true);
+                        et[i].setEnabled(true);
+                        et[i].setTextColor(Color.BLACK);
                     }
                     for (int i = 0; i < zs.length; i ++){
-                        zs[i].setClickable(true);
-                        zs[i].setFocusable(true);
-                        zs[i].setFocusableInTouchMode(true);
+                        zs[i].setEnabled(true);
                     }
                 }else{
                     userStatus = "guest";
                     for (int i = 0; i < sp.length; i ++){
-                        sp[i].setClickable(false);
-                        sp[i].setFocusable(false);
-                        sp[i].setFocusableInTouchMode(false);
+                        sp[i].setEnabled(false);
                     }
                     for (int i = 0; i < et.length; i ++){
-                        et[i].setClickable(false);
-                        et[i].setFocusable(false);
-                        et[i].setFocusableInTouchMode(false);
+                        et[i].setEnabled(false);
+                        et[i].setTextColor(Color.BLACK);
                     }
                     for (int i = 0; i < zs.length; i ++){
-                        zs[i].setClickable(false);
-                        zs[i].setFocusable(false);
-                        zs[i].setFocusableInTouchMode(false);
+                        zs[i].setEnabled(false);
+                        zs[i].setTextColor(Color.BLACK);
                     }
                 }
                 setSupportActionBar(toolbar);
                 for (int i = 0; i < et.length; i++) {
-                    et[i].setText((CharSequence) dataSnapshot.child("Homework" + i).getValue());
+                    homeworkstr[i] = (String) dataSnapshot.child("Homework" + i).getValue();
+                    et[i].setText(homeworkstr[i]);
                 }
                 for (int i = 0; i < sp.length; i++) {
                     if (dataSnapshot.child("Subjects" + i).getValue(Integer.class)!=null) {
                         int position = dataSnapshot.child("Subjects" + i).getValue(Integer.class);
+                        spinnerint[i] = position;
                         sp[i].setSelection(position);
                     }
                 }
                 for (int i = 0; i < zs.length; i++) {
                     if ((CharSequence) dataSnapshot.child("time" + i).getValue() != "") {
-                        zs[i].setText((CharSequence) dataSnapshot.child("time" + i).getValue());
+                        timestr[i] = (String) dataSnapshot.child("time" + i).getValue();
+                        zs[i].setText(timestr[i]);
                     }else{
                         zs[i].setText("-|-");
                     }
