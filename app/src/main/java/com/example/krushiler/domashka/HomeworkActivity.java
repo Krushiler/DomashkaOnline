@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -15,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.krushiler.domashka.Swipes.OnSwipeTouchListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,6 +54,11 @@ public class HomeworkActivity extends AppCompatActivity {
     int DIALOG_TIME = 1;
     int myHour = 0;
     int myMinute = 0;
+
+    OnSwipeTouchListener ons;
+    OnSwipeTouchListener onsspin;
+
+    LinearLayout mainLayout;
 
     SharedPreferences[] sPref = new SharedPreferences[et.length];
     SharedPreferences[] szsPref = new SharedPreferences[zs.length];
@@ -204,6 +210,7 @@ public class HomeworkActivity extends AppCompatActivity {
         zvonkilay = (LinearLayout) findViewById(R.id.zvonoklayout);
         linear=(LinearLayout) findViewById(R.id.linear);
         raspisanie=(LinearLayout) findViewById(R.id.raspisanie);
+        mainLayout=(LinearLayout) findViewById(R.id.homeworkxml);
         buttons[0]=bpn;
         buttons[1]=bvt;
         buttons[2]=bsr;
@@ -370,6 +377,56 @@ public class HomeworkActivity extends AppCompatActivity {
                 buttons[i].setOnClickListener(listeners[i]);
             }
         }
+        ons = new OnSwipeTouchListener(this){
+            public void onSwipeRight(){
+                Log.d("swipe", "Right");
+                if (buttons[4].isChecked()){
+                    buttons[5].callOnClick();
+                    buttons[5].setChecked(true);
+                }
+                if (buttons[3].isChecked()){
+                    buttons[4].callOnClick();
+                    buttons[4].setChecked(true);
+                }
+                if (buttons[2].isChecked()){
+                    buttons[3].callOnClick();
+                    buttons[3].setChecked(true);
+                }
+                if (buttons[1].isChecked()){
+                    buttons[2].callOnClick();
+                    buttons[2].setChecked(true);
+                }
+                if (buttons[0].isChecked()){
+                    buttons[1].callOnClick();
+                    buttons[1].setChecked(true);
+                }
+            }
+            public void onSwipeLeft(){
+                Log.d("swipe", "Left");
+                if (buttons[1].isChecked()){
+                    buttons[0].callOnClick();
+                    buttons[0].setChecked(true);
+                }
+                if (buttons[2].isChecked()){
+                    buttons[1].callOnClick();
+                    buttons[1].setChecked(true);
+                }
+                if (buttons[3].isChecked()){
+                    buttons[2].callOnClick();
+                    buttons[2].setChecked(true);
+                }
+                if (buttons[4].isChecked()){
+                    buttons[3].callOnClick();
+                    buttons[3].setChecked(true);
+                }
+                if (buttons[5].isChecked()){
+                    buttons[4].callOnClick();
+                    buttons[4].setChecked(true);
+                }
+            }
+        };
+        onsspin = ons;
+        mainLayout.setOnTouchListener(ons);
     }
 
 
@@ -448,7 +505,6 @@ public class HomeworkActivity extends AppCompatActivity {
             }
         }
         /*if(id==R.id.subjectsrasp){
-
         }*/
         return super.onOptionsItemSelected(item);
     }
@@ -481,26 +537,32 @@ public class HomeworkActivity extends AppCompatActivity {
                     userStatus = "editor";
                     for (int i = 0; i < sp.length; i ++){
                         sp[i].setEnabled(true);
+                        //sp[i].setOnTouchListener(onsspin);
                     }
                     for (int i = 0; i < et.length; i ++){
                         et[i].setEnabled(true);
                         et[i].setTextColor(Color.BLACK);
+                    //    et[i].setOnTouchListener(ons);
                     }
                     for (int i = 0; i < zs.length; i ++){
                         zs[i].setEnabled(true);
+                     //   zs[i].setOnTouchListener(ons);
                     }
                 }else{
                     userStatus = "guest";
                     for (int i = 0; i < sp.length; i ++){
                         sp[i].setEnabled(false);
+                        sp[i].setOnTouchListener(ons);
                     }
                     for (int i = 0; i < et.length; i ++){
                         et[i].setEnabled(false);
                         et[i].setTextColor(Color.BLACK);
+                        et[i].setOnTouchListener(ons);
                     }
                     for (int i = 0; i < zs.length; i ++){
                         zs[i].setEnabled(false);
                         zs[i].setTextColor(Color.BLACK);
+                        zs[i].setOnTouchListener(ons);
                     }
                 }
                 setSupportActionBar(toolbar);
