@@ -584,6 +584,10 @@ public class HomeworkActivity extends AppCompatActivity {
                     }else{
                         zs[i].setText("-|-");
                     }
+                }for (int i = 0; i < zs.length; i ++){
+                    if (zs[i].getText().toString().equals("") || zs[i].getText().toString().equals(" ")){
+                        zs[i].setText("-|-");
+                    }
                 }
             }
 
