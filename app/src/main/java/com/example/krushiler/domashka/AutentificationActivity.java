@@ -41,6 +41,7 @@ public class AutentificationActivity extends AppCompatActivity {
 
     String userStatus;
     String needEnter = "YES";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +88,7 @@ public class AutentificationActivity extends AppCompatActivity {
         myRef = FirebaseDatabase.getInstance().getReference();
 
     }
+
     public void onClick(View view) {
         if (view.getId() == R.id.enterbtn) {
             signin(ETemail.getText().toString(), ETpassword.getText().toString());
@@ -95,14 +97,14 @@ public class AutentificationActivity extends AppCompatActivity {
         }
     }
 
-    public void checkEditor(){
+    public void checkEditor() {
         myRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String s = ((CharSequence)dataSnapshot.child("EditorCode").getValue()).toString();
-                if (ETeditor.getText().toString().equals(s)){
+                String s = ((CharSequence) dataSnapshot.child("EditorCode").getValue()).toString();
+                if (ETeditor.getText().toString().equals(s)) {
                     userStatus = "editor";
-                }else{
+                } else {
                     userStatus = "guest";
                 }
             }
@@ -114,12 +116,11 @@ public class AutentificationActivity extends AppCompatActivity {
         });
     }
 
-    public void signin(String email, String password)
-    {
-        mAuth.signInWithEmailAndPassword(email + "@li1irk.ru",password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+    public void signin(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email + "@li1irk.ru", password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()) {
+                if (task.isSuccessful()) {
                     //Toast.makeText(AutentificationActivity.this, "Aвторизация успешна", Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor emailEditor = sharedPreferencesEmail.edit();
                     SharedPreferences.Editor passwordEditor = sharedPreferencesPassword.edit();
@@ -145,52 +146,56 @@ public class AutentificationActivity extends AppCompatActivity {
                     intent.putExtra("userStatus", ETeditor.getText().toString());
                     intent.putExtra("editorCode", ETeditor.getText().toString());
                     startActivity(intent);
-                }else
+                } else
                     Toast.makeText(AutentificationActivity.this, "Неверный логин или пароль", Toast.LENGTH_SHORT).show();
 
             }
         });
     }
-    public void registration (final String email , final String password){
-        mAuth.createUserWithEmailAndPassword(email + "@li1irk.ru", password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful())
-                {
 
-                    DatabaseReference myRef;
+    public void registration(final String email, final String password) {
+        if (ETemail.getText().toString().length() > 0 && ETpassword.getText().toString().length() > 0) {
+            mAuth.createUserWithEmailAndPassword(email + "@li1irk.ru", password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
 
-                    myRef = FirebaseDatabase.getInstance().getReference();
+                        DatabaseReference myRef;
 
-                    user = mAuth.getInstance().getCurrentUser();
+                        myRef = FirebaseDatabase.getInstance().getReference();
 
-                    myRef.child(user.getUid()).child("EditorCode").setValue(ETeditor.getText().toString());
+                        user = mAuth.getInstance().getCurrentUser();
 
-                    SharedPreferences.Editor emailEditor = sharedPreferencesEmail.edit();
-                    SharedPreferences.Editor passwordEditor = sharedPreferencesPassword.edit();
-                    SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
+                        myRef.child(user.getUid()).child("EditorCode").setValue(ETeditor.getText().toString());
 
-                    sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
-                    sharedPreferencesPassword = getSharedPreferences("passwordPref", MODE_PRIVATE);
-                    sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
+                        SharedPreferences.Editor emailEditor = sharedPreferencesEmail.edit();
+                        SharedPreferences.Editor passwordEditor = sharedPreferencesPassword.edit();
+                        SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
 
-                    emailEditor.putString("email", ETemail.getText().toString());
-                    passwordEditor.putString("password", ETpassword.getText().toString());
-                    editorEditor.putString("editor", ETeditor.getText().toString());
+                        sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
+                        sharedPreferencesPassword = getSharedPreferences("passwordPref", MODE_PRIVATE);
+                        sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
 
-                    emailEditor.commit();
-                    passwordEditor.commit();
-                    editorEditor.commit();
+                        emailEditor.putString("email", ETemail.getText().toString());
+                        passwordEditor.putString("password", ETpassword.getText().toString());
+                        editorEditor.putString("editor", ETeditor.getText().toString());
 
-                    mAuth.signInWithEmailAndPassword(email, password);
-                    Intent intent = new Intent(AutentificationActivity.this, HomeworkActivity.class);
-                    intent.putExtra("userStatus", ETeditor.getText().toString());
-                    intent.putExtra("editorCode", ETeditor.getText().toString());
-                    startActivity(intent);
+                        emailEditor.commit();
+                        passwordEditor.commit();
+                        editorEditor.commit();
+
+                        mAuth.signInWithEmailAndPassword(email, password);
+                        Intent intent = new Intent(AutentificationActivity.this, HomeworkActivity.class);
+                        intent.putExtra("userStatus", ETeditor.getText().toString());
+                        intent.putExtra("editorCode", ETeditor.getText().toString());
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(AutentificationActivity.this, "Короткий пароль, или логин уже зарегестрирован", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                else
-                    Toast.makeText(AutentificationActivity.this, "Короткий пароль, или логин уже зарегестрирован", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        } else {
+            Toast.makeText(AutentificationActivity.this,"Логин и парольне могут быть пустыми", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -452,6 +452,9 @@ public class HomeworkActivity extends AppCompatActivity {
             alertDialog.show();
         }
         if(id==R.id.zvonki){
+            for (int i = 0; i < buttons.length; i ++){
+                buttons[i].setChecked(false);
+            }
             zvonkilay.setVisibility(View.VISIBLE);
             ponl.setVisibility(View.GONE);
             vtl.setVisibility(View.GONE);
