@@ -50,14 +50,13 @@ public class HomeworkActivity extends AppCompatActivity {
     String homeworkstr[] = new String[42];
     int spinnerint[] = new int[42];
     String timestr[] = new String[16];
+    boolean isOnTimeLayout = false;
 
     int DIALOG_TIME = 1;
     int myHour = 0;
     int myMinute = 0;
 
     OnSwipeTouchListener ons;
-    OnSwipeTouchListener onsspin;
-
     LinearLayout mainLayout;
 
     SharedPreferences[] sPref = new SharedPreferences[et.length];
@@ -69,6 +68,9 @@ public class HomeworkActivity extends AppCompatActivity {
     private List<String> databaseHomework;
     private List<Integer> databaseSubjects;
     private List<String> databaseTime;
+
+    boolean isOnRings = false;
+    int currDay = 0;
 
     FirebaseUser user = mAuth.getInstance().getCurrentUser();
 
@@ -425,7 +427,6 @@ public class HomeworkActivity extends AppCompatActivity {
                 }
             }
         };
-        onsspin = ons;
         mainLayout.setOnTouchListener(ons);
     }
 
@@ -452,18 +453,34 @@ public class HomeworkActivity extends AppCompatActivity {
             alertDialog.show();
         }
         if(id==R.id.zvonki){
-            for (int i = 0; i < buttons.length; i ++){
-                buttons[i].setChecked(false);
+            if(!isOnRings) {
+                for (int i = 0; i < buttons.length; i++) {
+                    if (buttons[i].isChecked()){
+                        currDay = i;
+                    }
+                    buttons[i].setChecked(false);
+                }
+                zvonkilay.setVisibility(View.VISIBLE);
+                ponl.setVisibility(View.GONE);
+                vtl.setVisibility(View.GONE);
+                srl.setVisibility(View.GONE);
+                chtl.setVisibility(View.GONE);
+                ptl.setVisibility(View.GONE);
+                sbl.setVisibility(View.GONE);
+                linear.setVisibility(View.GONE);
+                findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+                isOnRings = true;
+            }else{
+                zvonkilay.setVisibility(View.INVISIBLE);
+                for (int i = 0; i < buttons.length; i++){
+                    if(i == currDay){
+                        buttons[i].callOnClick();
+                        buttons[i].setChecked(true);
+                        break;
+                    }
+                }
+                isOnRings = false;
             }
-            zvonkilay.setVisibility(View.VISIBLE);
-            ponl.setVisibility(View.GONE);
-            vtl.setVisibility(View.GONE);
-            srl.setVisibility(View.GONE);
-            chtl.setVisibility(View.GONE);
-            ptl.setVisibility(View.GONE);
-            sbl.setVisibility(View.GONE);
-            linear.setVisibility(View.GONE);
-            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
         }
         if(id==R.id.deleteDZ){
             onClickDeleteDZ();
@@ -540,21 +557,19 @@ public class HomeworkActivity extends AppCompatActivity {
                     userStatus = "editor";
                     for (int i = 0; i < sp.length; i ++){
                         sp[i].setEnabled(true);
-                        //sp[i].setOnTouchListener(onsspin);
                     }
                     for (int i = 0; i < et.length; i ++){
                         et[i].setEnabled(true);
                         et[i].setTextColor(Color.BLACK);
-                    //    et[i].setOnTouchListener(ons);
                     }
                     for (int i = 0; i < zs.length; i ++){
                         zs[i].setEnabled(true);
-                     //   zs[i].setOnTouchListener(ons);
                     }
                 }else{
                     userStatus = "guest";
                     for (int i = 0; i < sp.length; i ++){
                         sp[i].setEnabled(false);
+                        sp[i].setOnTouchListener(ons);
                         sp[i].setOnTouchListener(ons);
                     }
                     for (int i = 0; i < et.length; i ++){
@@ -565,7 +580,6 @@ public class HomeworkActivity extends AppCompatActivity {
                     for (int i = 0; i < zs.length; i ++){
                         zs[i].setEnabled(false);
                         zs[i].setTextColor(Color.BLACK);
-                        zs[i].setOnTouchListener(ons);
                     }
                 }
                 setSupportActionBar(toolbar);
@@ -639,6 +653,7 @@ public class HomeworkActivity extends AppCompatActivity {
             linear.setVisibility(View.VISIBLE);
             zvonkilay.setVisibility(View.GONE);
             findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+            isOnRings = false;
         }
     };
     private View.OnClickListener lisvt = new View.OnClickListener() {
@@ -651,6 +666,7 @@ public class HomeworkActivity extends AppCompatActivity {
             linear.setVisibility(View.VISIBLE);
             zvonkilay.setVisibility(View.GONE);
             findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+            isOnRings = false;
         }
     };
     private View.OnClickListener lissr = new View.OnClickListener() {
@@ -663,6 +679,7 @@ public class HomeworkActivity extends AppCompatActivity {
             linear.setVisibility(View.VISIBLE);
             zvonkilay.setVisibility(View.GONE);
             findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+            isOnRings = false;
         }
     };
     private View.OnClickListener lischt = new View.OnClickListener() {
@@ -675,6 +692,7 @@ public class HomeworkActivity extends AppCompatActivity {
             linear.setVisibility(View.VISIBLE);
             zvonkilay.setVisibility(View.GONE);
             findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+            isOnRings = false;
         }
     };
     private View.OnClickListener lispt = new View.OnClickListener() {
@@ -687,6 +705,7 @@ public class HomeworkActivity extends AppCompatActivity {
             linear.setVisibility(View.VISIBLE);
             zvonkilay.setVisibility(View.GONE);
             findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+            isOnRings = false;
         }
     };
     private View.OnClickListener lissb = new View.OnClickListener() {
@@ -699,6 +718,7 @@ public class HomeworkActivity extends AppCompatActivity {
             linear.setVisibility(View.VISIBLE);
             zvonkilay.setVisibility(View.GONE);
             findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+            isOnRings = false;
         }
     };
 
