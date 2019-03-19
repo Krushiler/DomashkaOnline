@@ -448,7 +448,7 @@ public class HomeworkActivity extends AppCompatActivity {
         if(id==R.id.oproge){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("О программе");
-            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.1");
+            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.2.1");
             alertDialog.setPositiveButton("Закрыть", null);
             alertDialog.show();
         }
