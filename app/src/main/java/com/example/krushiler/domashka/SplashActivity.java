@@ -81,7 +81,6 @@ public class SplashActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }else {
-//                    Toast.makeText(SplashActivity.this, "Неверный почта или пароль", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SplashActivity.this, AutentificationActivity.class);
                     startActivity(intent);
                     finish();

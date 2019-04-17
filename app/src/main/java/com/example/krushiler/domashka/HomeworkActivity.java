@@ -1,5 +1,6 @@
 package com.example.krushiler.domashka;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -19,15 +21,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.krushiler.domashka.Swipes.OnSwipeTouchListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,14 +41,26 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class HomeworkActivity extends AppCompatActivity {
-    LinearLayout ponl, vtl, srl, chtl, ptl, sbl, linear, raspisanie, zvonkilay;
-    LinearLayout[] layouts = new LinearLayout[6];
+    LinearLayout ponl, vtl, srl, chtl, ptl, sbl, linear, raspisanie, zvonkilay, fileslay;
+    ScrollView mainScrollView;
+    LinearLayout[] layouts = new LinearLayout[8];
     RadioButton bpn, bvt, bsr, bcht, bpt, bsb;
     Toolbar toolbar;
+    Button addPhotoBtn;
     RadioButton[] buttons = new RadioButton[6];
     Spinner sp[]=new Spinner[42];
     EditText et[] = new EditText[42];
@@ -51,6 +69,8 @@ public class HomeworkActivity extends AppCompatActivity {
     int spinnerint[] = new int[42];
     String timestr[] = new String[16];
     boolean isOnTimeLayout = false;
+    List<String> fileList = new ArrayList<>();
+    Map<Integer, String> fileMap = new HashMap<Integer, String>();
 
     int DIALOG_TIME = 1;
     int myHour = 0;
@@ -73,6 +93,8 @@ public class HomeworkActivity extends AppCompatActivity {
     int currDay = 0;
 
     FirebaseUser user = mAuth.getInstance().getCurrentUser();
+    FirebaseStorage firebaseStorage;
+    StorageReference storageReference, imagesRef;
 
     ArrayAdapter<CharSequence> adapter;
 
@@ -209,10 +231,16 @@ public class HomeworkActivity extends AppCompatActivity {
         bcht=(RadioButton) findViewById(R.id.cht);
         bpt=(RadioButton) findViewById(R.id.pt);
         bsb=(RadioButton) findViewById(R.id.sb);
+
+        addPhotoBtn = (Button) findViewById(R.id.addPhotoButton);
+
+        mainScrollView = (ScrollView) findViewById(R.id.mainScrollView);
+
         zvonkilay = (LinearLayout) findViewById(R.id.zvonoklayout);
         linear=(LinearLayout) findViewById(R.id.linear);
         raspisanie=(LinearLayout) findViewById(R.id.raspisanie);
         mainLayout=(LinearLayout) findViewById(R.id.homeworkxml);
+        fileslay=(LinearLayout) findViewById(R.id.fileslayout);
         buttons[0]=bpn;
         buttons[1]=bvt;
         buttons[2]=bsr;
@@ -225,8 +253,13 @@ public class HomeworkActivity extends AppCompatActivity {
         layouts[3]=chtl;
         layouts[4]=ptl;
         layouts[5]=sbl;
-
+        layouts[6]=fileslay;
+        layouts[7]=linear;
         toolbar=(Toolbar) findViewById(R.id.toolbar);
+
+        firebaseStorage = FirebaseStorage.getInstance();
+        storageReference = firebaseStorage.getReference();
+        imagesRef = storageReference.child("images");
 
         int n = calendar.get(Calendar.DAY_OF_WEEK);
         String[] array = getResources().getStringArray(R.array.subjects);
@@ -460,6 +493,7 @@ public class HomeworkActivity extends AppCompatActivity {
                     }
                     buttons[i].setChecked(false);
                 }
+                mainScrollView.setVisibility(View.GONE);
                 zvonkilay.setVisibility(View.VISIBLE);
                 ponl.setVisibility(View.GONE);
                 vtl.setVisibility(View.GONE);
@@ -471,14 +505,10 @@ public class HomeworkActivity extends AppCompatActivity {
                 findViewById(R.id.vihodnoy).setVisibility(View.GONE);
                 isOnRings = true;
             }else{
-                zvonkilay.setVisibility(View.INVISIBLE);
-                for (int i = 0; i < buttons.length; i++){
-                    if(i == currDay){
-                        buttons[i].callOnClick();
-                        buttons[i].setChecked(true);
-                        break;
-                    }
-                }
+                zvonkilay.setVisibility(View.GONE);
+                buttons[currDay].callOnClick();
+                buttons[currDay].setChecked(true);
+                mainScrollView.setVisibility(View.VISIBLE);
                 isOnRings = false;
             }
         }
@@ -524,6 +554,17 @@ public class HomeworkActivity extends AppCompatActivity {
                 zs[i].setText(timestr[i]);
             }
         }
+        if(id==R.id.files){
+            for (int i = 0; i < layouts.length; i++){
+                layouts[i].setVisibility(View.GONE);
+                mainScrollView.setVisibility(View.GONE);
+                mainScrollView.setVisibility(View.GONE);
+                fileslay.setVisibility(View.VISIBLE);
+            }
+            for (int i = 0; i < buttons.length; i++) {
+                buttons[i].setChecked(false);
+            }
+        }
         /*if(id==R.id.subjectsrasp){
         }*/
         return super.onOptionsItemSelected(item);
@@ -565,6 +606,7 @@ public class HomeworkActivity extends AppCompatActivity {
                     for (int i = 0; i < zs.length; i ++){
                         zs[i].setEnabled(true);
                     }
+                    addPhotoBtn.setVisibility(View.VISIBLE);
                 }else{
                     userStatus = "guest";
                     for (int i = 0; i < sp.length; i ++){
@@ -581,6 +623,7 @@ public class HomeworkActivity extends AppCompatActivity {
                         zs[i].setEnabled(false);
                         zs[i].setTextColor(Color.BLACK);
                     }
+                    addPhotoBtn.setVisibility(View.GONE);
                 }
                 setSupportActionBar(toolbar);
                 for (int i = 0; i < et.length; i++) {
@@ -601,11 +644,12 @@ public class HomeworkActivity extends AppCompatActivity {
                     }else{
                         zs[i].setText("-|-");
                     }
-                }for (int i = 0; i < zs.length; i ++){
+                }for (int i = 0; i < zs.length; i++){
                     if (zs[i].getText().toString().equals("") || zs[i].getText().toString().equals(" ")){
                         zs[i].setText("-|-");
                     }
                 }
+                fileList = (List<String>) dataSnapshot.child("fileList").getValue();
             }
 
             @Override
@@ -613,11 +657,13 @@ public class HomeworkActivity extends AppCompatActivity {
 
             }
         });
+        //downloadPhotos();
+        //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(fileList.get(0))));
     }
     @Override
     protected void onStop() {
         super.onStop();
-        saveText();
+        //saveText();
     }
     TextView tv;
     public void onclick(View view) {
@@ -643,82 +689,59 @@ public class HomeworkActivity extends AppCompatActivity {
         }
     };
 
+    protected void onClickDaysButtons(){
+        for(int i = 0; i < layouts.length; i++){
+            layouts[i].setVisibility(View.GONE);
+        }
+        linear.setVisibility(View.VISIBLE);
+        zvonkilay.setVisibility(View.GONE);
+        findViewById(R.id.vihodnoy).setVisibility(View.GONE);
+        isOnRings = false;
+        mainScrollView.setVisibility(View.VISIBLE);
+    }
+
+
+
     private View.OnClickListener lispon = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            for(int i = 0; i < layouts.length; i++){
-                layouts[i].setVisibility(View.GONE);
-            }
+            onClickDaysButtons();
             ponl.setVisibility(View.VISIBLE);
-            linear.setVisibility(View.VISIBLE);
-            zvonkilay.setVisibility(View.GONE);
-            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
-            isOnRings = false;
         }
     };
     private View.OnClickListener lisvt = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            for(int i = 0; i < layouts.length; i++){
-                layouts[i].setVisibility(View.GONE);
-            }
+            onClickDaysButtons();
             vtl.setVisibility(View.VISIBLE);
-            linear.setVisibility(View.VISIBLE);
-            zvonkilay.setVisibility(View.GONE);
-            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
-            isOnRings = false;
         }
     };
     private View.OnClickListener lissr = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            for(int i = 0; i < layouts.length; i++){
-                layouts[i].setVisibility(View.GONE);
-            }
+            onClickDaysButtons();
             srl.setVisibility(View.VISIBLE);
-            linear.setVisibility(View.VISIBLE);
-            zvonkilay.setVisibility(View.GONE);
-            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
-            isOnRings = false;
         }
     };
     private View.OnClickListener lischt = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            for(int i = 0; i < layouts.length; i++){
-                layouts[i].setVisibility(View.GONE);
-            }
+            onClickDaysButtons();
             chtl.setVisibility(View.VISIBLE);
-            linear.setVisibility(View.VISIBLE);
-            zvonkilay.setVisibility(View.GONE);
-            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
-            isOnRings = false;
         }
     };
     private View.OnClickListener lispt = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            for(int i = 0; i < layouts.length; i++){
-                layouts[i].setVisibility(View.GONE);
-            }
+            onClickDaysButtons();
             ptl.setVisibility(View.VISIBLE);
-            linear.setVisibility(View.VISIBLE);
-            zvonkilay.setVisibility(View.GONE);
-            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
-            isOnRings = false;
         }
     };
     private View.OnClickListener lissb = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            for(int i = 0; i < layouts.length; i++){
-                layouts[i].setVisibility(View.GONE);
-            }
+            onClickDaysButtons();
             sbl.setVisibility(View.VISIBLE);
-            linear.setVisibility(View.VISIBLE);
-            zvonkilay.setVisibility(View.GONE);
-            findViewById(R.id.vihodnoy).setVisibility(View.GONE);
-            isOnRings = false;
         }
     };
 
@@ -784,4 +807,47 @@ public class HomeworkActivity extends AppCompatActivity {
 
         alertDialog.show();
     }
+
+    public void onClickAddPhoto(View v){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();
+                Log.i("PickedImage", "Uri: " + uri.toString());
+                imagesRef = storageReference.child("images/" + uri.getLastPathSegment());
+                UploadTask uploadTask = imagesRef.putFile(uri);
+                final Uri finalUri = uri;
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        fileList.add(finalUri.getLastPathSegment());
+                        myRef.child(user.getUid()).child("fileList").setValue(fileList);
+                    }
+                });
+            }
+        }
+    }
+
+    /*private void downloadPhotos(){
+        for (int i= 0; i < fileList.size(); i ++){
+            storageReference.child("images/" + fileList.get(i)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+
+                }
+            });
+        }
+    }*/
 }

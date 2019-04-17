@@ -5,6 +5,11 @@
         android:id="@+id/subjectsrasp"
         app:showAsAction="never"
         android:title="Расписание" />-->
+    <!--<item
+        android:id="@+id/files"
+        app:showAsAction="never"
+        android:title="Файлы"
+        />-->
     <item
         android:id="@+id/oproge"
         app:showAsAction="never"

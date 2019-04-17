@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DomashkaOnline.iml" filepath="$PROJECT_DIR$/DomashkaOnline.iml" />
       <module fileurl="file://$PROJECT_DIR$/DomashkaOnlineAdmin.iml" filepath="$PROJECT_DIR$/DomashkaOnlineAdmin.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
