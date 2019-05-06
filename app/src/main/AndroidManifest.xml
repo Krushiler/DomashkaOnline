@@ -22,7 +22,7 @@
         <activity
             android:name=".HomeworkActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".AutentificationActivity"></activity>
+        <activity android:name=".AutentificationActivity" />
     </application>
 
 </manifest>

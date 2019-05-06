@@ -1309,4 +1309,21 @@
             android:text="Загрузить фото"
             android:onClick="onClickAddPhoto" />
     </LinearLayout>
+<LinearLayout
+    android:id="@+id/layoutForShow"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:visibility="gone">
+    <TextView
+        android:id="@+id/textViewForShow"
+        android:layout_width="wrap_content"
+        android:textColor="#000000"
+        android:textSize="20dp"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/imageViewForShow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
 </LinearLayout>

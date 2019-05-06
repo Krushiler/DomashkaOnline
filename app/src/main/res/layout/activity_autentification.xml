@@ -39,20 +39,8 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="89dp"
         android:ems="10"
-        android:hint="Login"
+        android:hint="Код класса"
         android:inputType="textEmailAddress" />
-
-    <EditText
-        android:id="@+id/passwordet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="175dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/editoret"

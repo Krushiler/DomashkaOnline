@@ -30,7 +30,6 @@ public class AutentificationActivity extends AppCompatActivity {
     private DatabaseReference myRef;
 
     private EditText ETemail;
-    private EditText ETpassword;
     private EditText ETeditor;
 
     SharedPreferences sharedPreferencesEmail;
@@ -50,18 +49,14 @@ public class AutentificationActivity extends AppCompatActivity {
         needEnter = i.getStringExtra("status");
         mAuth = FirebaseAuth.getInstance();
         ETemail = (EditText) findViewById(R.id.emailet);
-        ETpassword = (EditText) findViewById(R.id.passwordet);
         ETeditor = (EditText) findViewById(R.id.editoret);
 
         String savedText1, savedText2, savedText3;
         sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
-        sharedPreferencesPassword = getSharedPreferences("passwordPref", MODE_PRIVATE);
         sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
         savedText1 = sharedPreferencesEmail.getString("email", "");
-        savedText2 = sharedPreferencesPassword.getString("password", "");
         savedText3 = sharedPreferencesEditor.getString("editor", "");
         ETemail.setText(savedText1);
-        ETpassword.setText(savedText2);
         ETeditor.setText(savedText3);
 
         /*if (needEnter != "NO" && savedText1 != "" && savedText2 != ""){
@@ -91,9 +86,9 @@ public class AutentificationActivity extends AppCompatActivity {
 
     public void onClick(View view) {
         if (view.getId() == R.id.enterbtn) {
-            signin(ETemail.getText().toString(), ETpassword.getText().toString());
+            signin(ETemail.getText().toString(), "li1irk");
         } else if (view.getId() == R.id.registerbtn) {
-            registration(ETemail.getText().toString(), ETpassword.getText().toString());
+            registration(ETemail.getText().toString(), "li1irk");
         }
     }
 
@@ -123,15 +118,12 @@ public class AutentificationActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     //Toast.makeText(AutentificationActivity.this, "Aвторизация успешна", Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor emailEditor = sharedPreferencesEmail.edit();
-                    SharedPreferences.Editor passwordEditor = sharedPreferencesPassword.edit();
                     SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
 
                     sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
-                    sharedPreferencesPassword = getSharedPreferences("passwordPref", MODE_PRIVATE);
                     sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
 
                     emailEditor.putString("email", ETemail.getText().toString());
-                    passwordEditor.putString("password", ETpassword.getText().toString());
                     editorEditor.putString("editor", ETeditor.getText().toString());
 
                     user = mAuth.getInstance().getCurrentUser();
@@ -140,7 +132,6 @@ public class AutentificationActivity extends AppCompatActivity {
                     checkEditor();
 
                     emailEditor.commit();
-                    passwordEditor.commit();
                     editorEditor.commit();
                     Intent intent = new Intent(AutentificationActivity.this, HomeworkActivity.class);
                     intent.putExtra("userStatus", ETeditor.getText().toString());
@@ -154,7 +145,7 @@ public class AutentificationActivity extends AppCompatActivity {
     }
 
     public void registration(final String email, final String password) {
-        if (ETemail.getText().toString().length() > 0 && ETpassword.getText().toString().length() > 0) {
+        if (ETemail.getText().toString().length() > 0) {
             mAuth.createUserWithEmailAndPassword(email + "@li1irk.ru", password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -169,19 +160,15 @@ public class AutentificationActivity extends AppCompatActivity {
                         myRef.child(user.getUid()).child("EditorCode").setValue(ETeditor.getText().toString());
 
                         SharedPreferences.Editor emailEditor = sharedPreferencesEmail.edit();
-                        SharedPreferences.Editor passwordEditor = sharedPreferencesPassword.edit();
                         SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
 
                         sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
-                        sharedPreferencesPassword = getSharedPreferences("passwordPref", MODE_PRIVATE);
                         sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
 
                         emailEditor.putString("email", ETemail.getText().toString());
-                        passwordEditor.putString("password", ETpassword.getText().toString());
                         editorEditor.putString("editor", ETeditor.getText().toString());
 
                         emailEditor.commit();
-                        passwordEditor.commit();
                         editorEditor.commit();
 
                         mAuth.signInWithEmailAndPassword(email, password);
@@ -190,12 +177,12 @@ public class AutentificationActivity extends AppCompatActivity {
                         intent.putExtra("editorCode", ETeditor.getText().toString());
                         startActivity(intent);
                     } else {
-                        Toast.makeText(AutentificationActivity.this, "Короткий пароль, или логин уже зарегестрирован", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AutentificationActivity.this, "Код класса уже зарегестрирован", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } else {
-            Toast.makeText(AutentificationActivity.this,"Логин и парольне могут быть пустыми", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AutentificationActivity.this,"Код класса не может быть пустым", Toast.LENGTH_SHORT).show();
         }
     }
 }

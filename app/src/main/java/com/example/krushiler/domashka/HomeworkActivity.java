@@ -3,27 +3,42 @@ package com.example.krushiler.domashka;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
+import android.view.ActionMode;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -31,6 +46,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.krushiler.domashka.Swipes.OnSwipeTouchListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,16 +61,20 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public class HomeworkActivity extends AppCompatActivity {
+import uk.co.senab.photoview.PhotoViewAttacher;
+
+public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
     LinearLayout ponl, vtl, srl, chtl, ptl, sbl, linear, raspisanie, zvonkilay, fileslay;
     ScrollView mainScrollView;
     LinearLayout[] layouts = new LinearLayout[8];
@@ -69,12 +89,28 @@ public class HomeworkActivity extends AppCompatActivity {
     int spinnerint[] = new int[42];
     String timestr[] = new String[16];
     boolean isOnTimeLayout = false;
-    List<String> fileList = new ArrayList<>();
-    Map<Integer, String> fileMap = new HashMap<Integer, String>();
+    List<String> fileList = new ArrayList<String>();
+    List<String> stringList = new ArrayList<String>();
+    ListView lvfiles;
+    View viewForPopup;
+    ValueEventListener valueEventListener;
+
+    volatile boolean isDownloadedImages = true, isDeletedImage = true;
+
+    PhotoViewAttacher mAttacher;
+
+    SharedPreferences themeSP;
+    SharedPreferences.Editor themeSPEd;
 
     int DIALOG_TIME = 1;
     int myHour = 0;
     int myMinute = 0;
+
+    int positionOfImage;
+
+    ImageView imageViewForShow;
+    LinearLayout layoutForShow;
+    TextView textViewForShow;
 
     OnSwipeTouchListener ons;
     LinearLayout mainLayout;
@@ -85,12 +121,16 @@ public class HomeworkActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
+    private DatabaseReference userRef;
     private List<String> databaseHomework;
     private List<Integer> databaseSubjects;
     private List<String> databaseTime;
 
     boolean isOnRings = false;
     int currDay = 0;
+
+    //List<MyPair<String, String>> fileMap = new ArrayList<MyPair<String, String>>();
+    //Map<String, String> fileMap = new HashMap<String, String>();
 
     FirebaseUser user = mAuth.getInstance().getCurrentUser();
     FirebaseStorage firebaseStorage;
@@ -102,6 +142,9 @@ public class HomeworkActivity extends AppCompatActivity {
 
     String editorCode;
 
+    ArrayList<ImageListClass> imageObjects = new ArrayList<ImageListClass>();
+    ImageListAdapter imageListAdapter;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,12 +153,18 @@ public class HomeworkActivity extends AppCompatActivity {
         setContentView(R.layout.activity_homework);
         Calendar calendar = Calendar.getInstance();
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         userStatus = intent.getStringExtra("userStatus");
         editorCode = intent.getStringExtra("editorCode");
 
-        myRef = FirebaseDatabase.getInstance().getReference();
+        //if(themeSP.getString("theme", "green")=="green"){
 
+        //}else{
+
+        //}
+
+        myRef = FirebaseDatabase.getInstance().getReference();
+        userRef = myRef.child(user.getUid());
         et[0]=(EditText) findViewById(R.id.editText3);
         et[1]=(EditText) findViewById(R.id.editText5);
         et[2]=(EditText) findViewById(R.id.editText7);
@@ -232,7 +281,13 @@ public class HomeworkActivity extends AppCompatActivity {
         bpt=(RadioButton) findViewById(R.id.pt);
         bsb=(RadioButton) findViewById(R.id.sb);
 
+        imageViewForShow = (ImageView) findViewById(R.id.imageViewForShow);
+        layoutForShow = (LinearLayout) findViewById(R.id.layoutForShow);
+        textViewForShow = (TextView) findViewById(R.id.textViewForShow);
+
         addPhotoBtn = (Button) findViewById(R.id.addPhotoButton);
+
+        lvfiles = (ListView) findViewById(R.id.photoListView);
 
         mainScrollView = (ScrollView) findViewById(R.id.mainScrollView);
 
@@ -460,10 +515,152 @@ public class HomeworkActivity extends AppCompatActivity {
                 }
             }
         };
+        mAttacher = new PhotoViewAttacher(imageViewForShow);
         mainLayout.setOnTouchListener(ons);
+        lvfiles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, final View view, final int position, long l) {
+                if(userStatus.equals("editor")) {
+                    positionOfImage = position;
+                    viewForPopup = view;
+                    showMenu(view);
+
+                }else {
+
+
+                ImageView img= (ImageView)view.findViewById(R.id.imageforlist);
+                Bitmap bitmap=((BitmapDrawable)img.getDrawable()).getBitmap();
+                TextView tempTextView = (TextView) view.findViewById(R.id.tvforlist);
+                textViewForShow.setText(tempTextView.getText().toString());
+
+                onClickDaysButtons();
+                mainScrollView.setVisibility(View.GONE);
+                linear.setVisibility(View.GONE);
+                layoutForShow.setVisibility(View.VISIBLE);
+                imageViewForShow.setImageBitmap(bitmap);
+                mAttacher.update();
+                }
+            }
+        });
     }
 
+    public void showMenu(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
 
+        // This activity implements OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.popupmenuimage);
+        popup.show();
+    }
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.openPhoto:
+                openPhoto();
+                return true;
+            case R.id.deletePhoto:
+                deletePhoto();
+                return true;
+            case R.id.changePhotoDes:
+                changePhoto();
+                return true;
+            default:
+                return false;
+        }
+    }
+    public void openPhoto(){
+        ImageView img= (ImageView)viewForPopup.findViewById(R.id.imageforlist);
+        Bitmap bitmap=((BitmapDrawable)img.getDrawable()).getBitmap();
+        TextView tempTextView = (TextView) viewForPopup.findViewById(R.id.tvforlist);
+        textViewForShow.setText(tempTextView.getText().toString());
+
+        onClickDaysButtons();
+        mainScrollView.setVisibility(View.GONE);
+        linear.setVisibility(View.GONE);
+        layoutForShow.setVisibility(View.VISIBLE);
+        imageViewForShow.setImageBitmap(bitmap);
+    }
+
+    public void changePhoto(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Описание");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("Отправить", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                stringList.set(positionOfImage, input.getText().toString());
+                userRef.child("stringList").setValue(stringList);
+            }
+        });
+        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
+    }
+
+    public void deletePhoto(){
+        if(isDeletedImage) {
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(HomeworkActivity.this);
+
+            alertDialog.setTitle("Подтвердить удаление...");
+
+            alertDialog.setMessage("Вы уверены, что хотите  удалить изображение?");
+
+            alertDialog.setIcon(R.drawable.rubbish_bin);
+
+            final int finalfinalposition = positionOfImage;
+
+            alertDialog.setPositiveButton("ДА", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    isDeletedImage = false;
+                    lvfiles.setItemsCanFocus(false);
+                    StorageReference deleteRef = storageReference.child(fileList.get(finalfinalposition));
+                    final int finalposition = finalfinalposition;
+                    deleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            fileList.remove(finalposition);
+                            stringList.remove(finalposition);
+                            userRef.removeEventListener(valueEventListener);
+                            myRef.child(user.getUid()).child("fileList").setValue(fileList);
+                            myRef.child(user.getUid()).child("stringList").setValue(stringList);
+                            userRef.addValueEventListener(valueEventListener);
+                            lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList));
+                            lvfiles.setItemsCanFocus(true);
+                            isDeletedImage = true;
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            lvfiles.setItemsCanFocus(true);
+                            Toast.makeText(HomeworkActivity.this, "Файл не был удалён", Toast.LENGTH_SHORT);
+                            isDeletedImage = true;
+                        }
+                    });
+                }
+            });
+            alertDialog.setNegativeButton("НЕТ", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+
+                    Toast.makeText(getApplicationContext(), "Вы нажали НЕТ", Toast.LENGTH_SHORT).show();
+                    dialog.cancel();
+                }
+            });
+            alertDialog.show();
+        }else{
+            Toast.makeText(getApplicationContext(), "Удаление предыдущего файла", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -481,7 +678,7 @@ public class HomeworkActivity extends AppCompatActivity {
         if(id==R.id.oproge){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("О программе");
-            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.2.1");
+            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.3.2");
             alertDialog.setPositiveButton("Закрыть", null);
             alertDialog.show();
         }
@@ -493,6 +690,8 @@ public class HomeworkActivity extends AppCompatActivity {
                     }
                     buttons[i].setChecked(false);
                 }
+                onClickDaysButtons();
+                fileslay.setVisibility(View.GONE);
                 mainScrollView.setVisibility(View.GONE);
                 zvonkilay.setVisibility(View.VISIBLE);
                 ponl.setVisibility(View.GONE);
@@ -556,13 +755,11 @@ public class HomeworkActivity extends AppCompatActivity {
         }
         if(id==R.id.files){
             for (int i = 0; i < layouts.length; i++){
+                onClickDaysButtons();
                 layouts[i].setVisibility(View.GONE);
                 mainScrollView.setVisibility(View.GONE);
-                mainScrollView.setVisibility(View.GONE);
                 fileslay.setVisibility(View.VISIBLE);
-            }
-            for (int i = 0; i < buttons.length; i++) {
-                buttons[i].setChecked(false);
+                linear.setVisibility(View.GONE);
             }
         }
         /*if(id==R.id.subjectsrasp){
@@ -586,14 +783,19 @@ public class HomeworkActivity extends AppCompatActivity {
                 }
             }
         }
+       myRef.child(user.getUid()).child("fileList").setValue(fileList);
+       for (int i = 0; i < fileList.size(); i++){
+           Log.d("fileList", fileList.get(i));
+       }
     }
 
     private void loadText() {
 
-        myRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String s = ((CharSequence)dataSnapshot.child("EditorCode").getValue()).toString();
+
                 if (editorCode.equals(s)){
                     userStatus = "editor";
                     for (int i = 0; i < sp.length; i ++){
@@ -649,15 +851,29 @@ public class HomeworkActivity extends AppCompatActivity {
                         zs[i].setText("-|-");
                     }
                 }
-                fileList = (List<String>) dataSnapshot.child("fileList").getValue();
+                if(dataSnapshot.child("stringList").getValue()!=null) {
+                    stringList = (List<String>) dataSnapshot.child("stringList").getValue();
+                }
+               if(dataSnapshot.child("fileList").getValue()!=null) {
+                   fileList = (List<String>) dataSnapshot.child("fileList").getValue();
+                   isDownloadedImages = true;
+                   /*for (int ll = 0; ll < ((List<String>) dataSnapshot.child("fileMap").getValue()).size(); ll++) {
+                       Log.d("callbacker", (HashMap<String, String>) dataSnapshot.child("fileMap").getValue()).get(ll).getFile().toString();
+                   }*/
+                   lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList));
+                   lvfiles.setItemsCanFocus(true);
+               }else {
+                   lvfiles.setAdapter(null);
+                   isDownloadedImages = true;
+               }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
-        //downloadPhotos();
+        };
+        userRef.addValueEventListener(valueEventListener);
         //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(fileList.get(0))));
     }
     @Override
@@ -698,6 +914,8 @@ public class HomeworkActivity extends AppCompatActivity {
         findViewById(R.id.vihodnoy).setVisibility(View.GONE);
         isOnRings = false;
         mainScrollView.setVisibility(View.VISIBLE);
+        fileslay.setVisibility(View.GONE);
+        layoutForShow.setVisibility(View.GONE);
     }
 
 
@@ -809,45 +1027,110 @@ public class HomeworkActivity extends AppCompatActivity {
     }
 
     public void onClickAddPhoto(View v){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
+        if(isDownloadedImages) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
+        }else{
+            Toast.makeText(HomeworkActivity.this, "Отправка изображения. Жди...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public interface MyCallback {
+        void onCallback(List<MyPair<String, String>> value);
+    }
+
+    public void readData(final MyCallback myCallback) {
+        myRef.child(String.format("fileMap")).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<MyPair<String, String>> value = (List<MyPair<String, String>>) dataSnapshot.getValue();
+                isDownloadedImages = true;
+                myCallback.onCallback(value);
+                Log.d("callbacker", "first");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+    public boolean listContains(String uri){
+        String search = uri;
+        for(String str: fileList) {
+            if(str.trim().contains(search))
+                return true;
+        }
+        return false;
+    }
+
+    public String retries(String uri1){
+        String uri = uri1;
+        if (listContains(uri)){
+            uri+="p";
+            if(listContains(uri)){
+                return retries(uri);
+            }
+        }
+        return uri;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data1) {
+        final Intent data = data1;
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            Uri uri = null;
-            if (data != null) {
-                uri = data.getData();
-                Log.i("PickedImage", "Uri: " + uri.toString());
-                imagesRef = storageReference.child("images/" + uri.getLastPathSegment());
-                UploadTask uploadTask = imagesRef.putFile(uri);
-                final Uri finalUri = uri;
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        fileList.add(finalUri.getLastPathSegment());
-                        myRef.child(user.getUid()).child("fileList").setValue(fileList);
-                    }
-                });
-            }
-        }
-    }
+            final String[] sol = new String[1];
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Описание");
 
-    /*private void downloadPhotos(){
-        for (int i= 0; i < fileList.size(); i ++){
-            storageReference.child("images/" + fileList.get(i)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+
+            builder.setPositiveButton("Отправить", new DialogInterface.OnClickListener() {
                 @Override
-                public void onSuccess(Uri uri) {
-
+                public void onClick(DialogInterface dialog, int which) {
+                    isDownloadedImages = false;
+                    sol[0] = input.getText().toString();
+                    Uri uri1 = null;
+                    if (data != null) {
+                        uri1 = data.getData();
+                        String uri = "images/" + uri1.getLastPathSegment().toString();
+                        uri = retries(uri);
+                        Log.i("PickedImage", "Uri: " + uri);
+                        imagesRef = storageReference.child(uri);
+                        UploadTask uploadTask = imagesRef.putFile(uri1);
+                        final Uri finalUri = uri1;
+                        final String finaluriString = uri;
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                userRef.removeEventListener(valueEventListener);
+                                fileList.add(finaluriString);
+                                stringList.add(sol[0]);
+                                myRef.child(user.getUid()).child("stringList").setValue(stringList);
+                                myRef.child(user.getUid()).child("fileList").setValue(fileList);
+                                userRef.addValueEventListener(valueEventListener);
+                                isDownloadedImages = true;
+                            }
+                        });
+                    }
                 }
             });
+            builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+
         }
-    }*/
+    }
 }
