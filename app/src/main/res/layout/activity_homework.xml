@@ -284,6 +284,64 @@
                 android:ems="10" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerp1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextp1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerp2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextp2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerp3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextp3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -424,6 +482,63 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerv1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextv1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerv2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextv2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerv3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextv3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -566,6 +681,63 @@
                 android:layout_weight="1"
                 android:ems="10"/>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnersr1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextsr1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnersr2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextsr2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnersr3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextsr3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -706,6 +878,63 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnercht1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextcht1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnercht2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextcht2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnercht3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextcht3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -848,6 +1077,63 @@
                 android:layout_weight="1"
                 android:ems="10"/>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerpt1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextpt1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerpt2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextpt2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerpt3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextpt3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -989,6 +1275,63 @@
                 android:layout_weight="1"
                 android:ems="10"
                  />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnersb1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextsb1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnersb2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextsb2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnersb3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/editTextsb3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
@@ -1284,6 +1627,72 @@
                 android:onClick="onclick" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="147dp"
+                android:layout_height="wrap_content"
+                android:text="9-й урок"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/time9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:ems="10"
+                android:inputType="time"
+                android:onClick="onclick" />
+
+            <TextView
+                android:id="@+id/time99"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:ems="10"
+                android:inputType="time"
+                android:onClick="onclick" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="147dp"
+                android:layout_height="wrap_content"
+                android:text="10-й урок"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/time10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:ems="10"
+                android:inputType="time"
+                android:onClick="onclick" />
+
+            <TextView
+                android:id="@+id/time1010"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:ems="10"
+                android:inputType="time"
+                android:onClick="onclick" />
+
+        </LinearLayout>
 
 </LinearLayout>
     <LinearLayout
@@ -1309,6 +1718,7 @@
             android:text="Загрузить фото"
             android:onClick="onClickAddPhoto" />
     </LinearLayout>
+
 <LinearLayout
     android:id="@+id/layoutForShow"
     android:layout_width="match_parent"

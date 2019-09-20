@@ -59,10 +59,6 @@ public class AutentificationActivity extends AppCompatActivity {
         ETemail.setText(savedText1);
         ETeditor.setText(savedText3);
 
-        /*if (needEnter != "NO" && savedText1 != "" && savedText2 != ""){
-            signin(ETemail.getText().toString(), ETpassword.getText().toString());
-        }else{}*/
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -116,7 +112,6 @@ public class AutentificationActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    //Toast.makeText(AutentificationActivity.this, "Aвторизация успешна", Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor emailEditor = sharedPreferencesEmail.edit();
                     SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
 
@@ -184,5 +179,12 @@ public class AutentificationActivity extends AppCompatActivity {
         } else {
             Toast.makeText(AutentificationActivity.this,"Код класса не может быть пустым", Toast.LENGTH_SHORT).show();
         }
+    }
+    public void saveToEditorPrefs(String s){
+        SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
+
+        sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
+
+        editorEditor.putString("editor", s);
     }
 }

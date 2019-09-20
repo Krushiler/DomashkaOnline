@@ -26,7 +26,6 @@ public class SplashActivity extends AppCompatActivity {
     FirebaseUser user;
 
     SharedPreferences sharedPreferencesEmail;
-    SharedPreferences sharedPreferencesPassword;
     SharedPreferences sharedPreferencesEditor;
 
     @Override
@@ -36,13 +35,11 @@ public class SplashActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
-        sharedPreferencesPassword = getSharedPreferences("passwordPref", MODE_PRIVATE);
         sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
         mail = sharedPreferencesEmail.getString("email", "");
-        pass = sharedPreferencesPassword.getString("password", "");
         edit = sharedPreferencesEditor.getString("editor", "");
 
-        if (mail!=null && pass!=null && mail!="" && pass!=""){
+        if (mail!=null && mail!=""){
             signin(mail, pass);
         }else {
             Intent intent = new Intent(this, AutentificationActivity.class);
@@ -54,27 +51,23 @@ public class SplashActivity extends AppCompatActivity {
     }
     public void signin(String email, final String password)
     {
-        mAuth.signInWithEmailAndPassword(mail + "@li1irk.ru",pass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mAuth.signInWithEmailAndPassword(mail + "@li1irk.ru", "li1irk").addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
                     SharedPreferences.Editor emailEditor = sharedPreferencesEmail.edit();
-                    SharedPreferences.Editor passwordEditor = sharedPreferencesPassword.edit();
                     SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
 
                     sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
-                    sharedPreferencesPassword = getSharedPreferences("passwordPref", MODE_PRIVATE);
                     sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
 
                     emailEditor.putString("email", mail);
-                    passwordEditor.putString("password", pass);
                     editorEditor.putString("editor", edit);
 
                     user = mAuth.getInstance().getCurrentUser();
                     myRef = FirebaseDatabase.getInstance().getReference();
 
                     emailEditor.commit();
-                    passwordEditor.commit();
                     editorEditor.commit();
                     Intent intent = new Intent(SplashActivity.this, HomeworkActivity.class);
                     intent.putExtra("editorCode", edit);

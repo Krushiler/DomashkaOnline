@@ -38,6 +38,11 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:title="Вернуть все изменения"
         />
     <item
+        android:id="@+id/changeEditorCodeToolbar"
+        app:showAsAction="never"
+        android:title="Изменить код модератора"
+        />
+    <item
         android:id="@+id/exit"
         app:showAsAction="never"
         android:title="Выйти" />

@@ -40,6 +40,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -82,12 +83,12 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
     Toolbar toolbar;
     Button addPhotoBtn;
     RadioButton[] buttons = new RadioButton[6];
-    Spinner sp[]=new Spinner[42];
-    EditText et[] = new EditText[42];
-    TextView zs[] = new TextView[16];
-    String homeworkstr[] = new String[42];
-    int spinnerint[] = new int[42];
-    String timestr[] = new String[16];
+    Spinner sp[]=new Spinner[60];
+    EditText et[] = new EditText[60];
+    TextView zs[] = new TextView[20];
+    String homeworkstr[] = new String[60];
+    int spinnerint[] = new int[60];
+    String timestr[] = new String[20];
     boolean isOnTimeLayout = false;
     List<String> fileList = new ArrayList<String>();
     List<String> stringList = new ArrayList<String>();
@@ -142,7 +143,6 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
     String editorCode;
 
-    ArrayList<ImageListClass> imageObjects = new ArrayList<ImageListClass>();
     ImageListAdapter imageListAdapter;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -207,6 +207,24 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         et[39]=(EditText) findViewById(R.id.editText81);
         et[40]=(EditText) findViewById(R.id.editText83);
         et[41]=(EditText) findViewById(R.id.editText85);
+        et[42]=(EditText) findViewById(R.id.editTextp1);
+        et[43]=(EditText) findViewById(R.id.editTextp2);
+        et[44]=(EditText) findViewById(R.id.editTextp3);
+        et[45]=(EditText) findViewById(R.id.editTextv1);
+        et[46]=(EditText) findViewById(R.id.editTextv2);
+        et[47]=(EditText) findViewById(R.id.editTextv3);
+        et[48]=(EditText) findViewById(R.id.editTextsr1);
+        et[49]=(EditText) findViewById(R.id.editTextsr2);
+        et[50]=(EditText) findViewById(R.id.editTextsr3);
+        et[51]=(EditText) findViewById(R.id.editTextcht1);
+        et[52]=(EditText) findViewById(R.id.editTextcht2);
+        et[53]=(EditText) findViewById(R.id.editTextcht3);
+        et[54]=(EditText) findViewById(R.id.editTextpt1);
+        et[55]=(EditText) findViewById(R.id.editTextpt2);
+        et[56]=(EditText) findViewById(R.id.editTextpt3);
+        et[57]=(EditText) findViewById(R.id.editTextsb1);
+        et[58]=(EditText) findViewById(R.id.editTextsb2);
+        et[59]=(EditText) findViewById(R.id.editTextsb3);
 
         sp[0]=(Spinner) findViewById(R.id.spinner1);
         sp[1]=(Spinner) findViewById(R.id.spinner2);
@@ -250,6 +268,24 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         sp[39]=(Spinner) findViewById(R.id.spinner40);
         sp[40]=(Spinner) findViewById(R.id.spinner41);
         sp[41]=(Spinner) findViewById(R.id.spinner42);
+        sp[42]=(Spinner) findViewById(R.id.spinnerp1);
+        sp[43]=(Spinner) findViewById(R.id.spinnerp2);
+        sp[44]=(Spinner) findViewById(R.id.spinnerp3);
+        sp[45]=(Spinner) findViewById(R.id.spinnerv1);
+        sp[46]=(Spinner) findViewById(R.id.spinnerv2);
+        sp[47]=(Spinner) findViewById(R.id.spinnerv3);
+        sp[48]=(Spinner) findViewById(R.id.spinnersr1);
+        sp[49]=(Spinner) findViewById(R.id.spinnersr2);
+        sp[50]=(Spinner) findViewById(R.id.spinnersr3);
+        sp[51]=(Spinner) findViewById(R.id.spinnercht1);
+        sp[52]=(Spinner) findViewById(R.id.spinnercht2);
+        sp[53]=(Spinner) findViewById(R.id.spinnercht3);
+        sp[54]=(Spinner) findViewById(R.id.spinnerpt1);
+        sp[55]=(Spinner) findViewById(R.id.spinnerpt2);
+        sp[56]=(Spinner) findViewById(R.id.spinnerpt3);
+        sp[57]=(Spinner) findViewById(R.id.spinnersb1);
+        sp[58]=(Spinner) findViewById(R.id.spinnersb2);
+        sp[59]=(Spinner) findViewById(R.id.spinnersb3);
 
         zs[0]=(TextView) findViewById(R.id.time1);
         zs[1]=(TextView) findViewById(R.id.time11);
@@ -267,6 +303,10 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         zs[13]=(TextView) findViewById(R.id.time77);
         zs[14]=(TextView) findViewById(R.id.time8);
         zs[15]=(TextView) findViewById(R.id.time88);
+        zs[16]=(TextView) findViewById(R.id.time9);
+        zs[17]=(TextView) findViewById(R.id.time99);
+        zs[18]=(TextView) findViewById(R.id.time10);
+        zs[19]=(TextView) findViewById(R.id.time1010);
 
         ponl=(LinearLayout) findViewById(R.id.ponl);
         vtl=(LinearLayout) findViewById(R.id.vtl);
@@ -762,6 +802,9 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                 linear.setVisibility(View.GONE);
             }
         }
+        if (id==R.id.changeEditorCodeToolbar){
+            onClickChangeEditorCode();
+        }
         /*if(id==R.id.subjectsrasp){
         }*/
         return super.onOptionsItemSelected(item);
@@ -857,9 +900,6 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                if(dataSnapshot.child("fileList").getValue()!=null) {
                    fileList = (List<String>) dataSnapshot.child("fileList").getValue();
                    isDownloadedImages = true;
-                   /*for (int ll = 0; ll < ((List<String>) dataSnapshot.child("fileMap").getValue()).size(); ll++) {
-                       Log.d("callbacker", (HashMap<String, String>) dataSnapshot.child("fileMap").getValue()).get(ll).getFile().toString();
-                   }*/
                    lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList));
                    lvfiles.setItemsCanFocus(true);
                }else {
@@ -874,7 +914,6 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
             }
         };
         userRef.addValueEventListener(valueEventListener);
-        //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(fileList.get(0))));
     }
     @Override
     protected void onStop() {
@@ -899,7 +938,16 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             myHour = hourOfDay;
             myMinute = minute;
-            tv.setText(myHour + ":" + myMinute);
+            String strHour, strMinute;
+            strHour = Integer.toString(myHour);
+            strMinute = Integer.toString(myMinute);
+            if (myHour<10){
+                strHour="0"+strHour;
+            }
+            if (myMinute<10){
+                strMinute="0"+strMinute;
+            }
+            tv.setText(strHour + ":" + strMinute);
             hourOfDay = 0;
             minute = 0;
         }
@@ -977,37 +1025,49 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                 if(ponl.getVisibility() == View.VISIBLE){
                     for (int i = 0; i < 7; i++) {
                         et[i].setText("");
-                        saveText();
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        et[i+42].setText("");
                     }
                 }
                 else if(vtl.getVisibility() == View.VISIBLE){
                     for (int i = 7; i < 14; i++) {
                         et[i].setText("");
-                        saveText();
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        et[i+45].setText("");
                     }
                 }
                 else if(srl.getVisibility() == View.VISIBLE){
                     for (int i = 14; i < 21; i++) {
                         et[i].setText("");
-                        saveText();
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        et[i+48].setText("");
                     }
                 }
                 else if(chtl.getVisibility() == View.VISIBLE){
                     for (int i = 21; i < 28; i++) {
                         et[i].setText("");
-                        saveText();
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        et[i+51].setText("");
                     }
                 }
                 else if(ptl.getVisibility() == View.VISIBLE){
                     for (int i = 28; i < 35; i++) {
                         et[i].setText("");
-                        saveText();
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        et[i + 54].setText("");
                     }
                 }
                 else if(sbl.getVisibility() == View.VISIBLE){
                     for (int i = 35; i < 42; i++) {
                         et[i].setText("");
-                        saveText();
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        et[i+57].setText("");
                     }
                 }
                 Toast.makeText(getApplicationContext(), "ДЗ удалены", Toast.LENGTH_SHORT).show();
@@ -1076,6 +1136,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         return uri;
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data1) {
         final Intent data = data1;
@@ -1132,5 +1194,56 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
             builder.show();
 
         }
+    }
+
+    public void onClickChangeEditorCode(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Код класса");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+        input.setText(editorCode);
+
+        builder.setPositiveButton("Изменить", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                myRef.child(user.getUid()).child("EditorCode").setValue(input.getText().toString());
+                editorCode = input.getText().toString();
+                SharedPreferences sharedPreferencesEditor;
+                sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
+                SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
+                editorEditor.putString("editor", input.getText().toString());
+            }
+        });
+        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    public void showLayout(RelativeLayout rl) {
+        for (int i = 0; i < layouts.length; i++) {
+            onClickDaysButtons();
+            layouts[i].setVisibility(View.GONE);
+            mainScrollView.setVisibility(View.GONE);
+            fileslay.setVisibility(View.GONE);
+            linear.setVisibility(View.GONE);
+        }
+        rl.setVisibility(View.VISIBLE);
+    }
+    public void showLayout(LinearLayout  rl) {
+        for (int i = 0; i < layouts.length; i++) {
+            onClickDaysButtons();
+            layouts[i].setVisibility(View.GONE);
+            mainScrollView.setVisibility(View.GONE);
+            fileslay.setVisibility(View.GONE);
+            linear.setVisibility(View.GONE);
+        }
+        rl.setVisibility(View.VISIBLE);
     }
 }

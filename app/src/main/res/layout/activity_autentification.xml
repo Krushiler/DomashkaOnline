@@ -52,6 +52,6 @@
         android:layout_marginBottom="268dp"
         android:ems="10"
         android:hint="Код модератора (при наличии)"
-        android:inputType="textPassword" />
+        android:inputType="textNoSuggestions"/>
 
 </RelativeLayout>
