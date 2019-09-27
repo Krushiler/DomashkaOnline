@@ -7,6 +7,8 @@
     android:orientation="vertical"
     android:id="@+id/homeworkxml"
     tools:context="com.example.krushiler.domashka.HomeworkActivity"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:weightSum="1">
     <include
         layout="@layout/toolbar"/>
