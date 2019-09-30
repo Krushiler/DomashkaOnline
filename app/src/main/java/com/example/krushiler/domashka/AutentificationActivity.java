@@ -75,7 +75,6 @@ public class AutentificationActivity extends AppCompatActivity {
 
             }
         };
-
         myRef = FirebaseDatabase.getInstance().getReference();
 
     }

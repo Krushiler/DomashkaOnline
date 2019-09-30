@@ -1,7 +1,10 @@
 package com.example.krushiler.domashka;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,27 +30,41 @@ public class SplashActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferencesEmail;
     SharedPreferences sharedPreferencesEditor;
-
+    boolean connected = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+            mAuth = FirebaseAuth.getInstance();
 
-        sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
-        sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
-        mail = sharedPreferencesEmail.getString("email", "");
-        edit = sharedPreferencesEditor.getString("editor", "");
+            sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
+            sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
+            mail = sharedPreferencesEmail.getString("email", "");
+            edit = sharedPreferencesEditor.getString("editor", "");
 
-        if (mail!=null && mail!=""){
-            signin(mail, pass);
-        }else {
-            Intent intent = new Intent(this, AutentificationActivity.class);
+            if (mail!=null && mail!=""){
+                signin(mail, pass);
+            }else {
+                Intent intent = new Intent(this, AutentificationActivity.class);
+                startActivity(intent);
+                finish();
+            }
+            myRef = FirebaseDatabase.getInstance().getReference();
+        }
+        else {
+            connected = false;
+            Intent intent = new Intent(SplashActivity.this, HomeworkActivity.class);
+            intent.putExtra("connected", connected);
             startActivity(intent);
             finish();
         }
 
-        myRef = FirebaseDatabase.getInstance().getReference();
+
     }
     public void signin(String email, final String password)
     {
@@ -70,6 +87,7 @@ public class SplashActivity extends AppCompatActivity {
                     emailEditor.commit();
                     editorEditor.commit();
                     Intent intent = new Intent(SplashActivity.this, HomeworkActivity.class);
+                    intent.putExtra("connected", connected);
                     intent.putExtra("editorCode", edit);
                     startActivity(intent);
                     finish();

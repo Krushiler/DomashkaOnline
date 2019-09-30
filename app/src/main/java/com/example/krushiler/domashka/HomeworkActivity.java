@@ -116,9 +116,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
     OnSwipeTouchListener ons;
     LinearLayout mainLayout;
 
-    SharedPreferences[] sPref = new SharedPreferences[et.length];
-    SharedPreferences[] szsPref = new SharedPreferences[zs.length];
-    SharedPreferences[] spPref = new SharedPreferences[sp.length];
+    SharedPreferences etPref;
 
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
@@ -139,11 +137,13 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
     ArrayAdapter<CharSequence> adapter;
 
-    String userStatus;
+    String userStatus = "guest";
 
     String editorCode;
 
     ImageListAdapter imageListAdapter;
+
+    boolean haveInternet = false;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -154,6 +154,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         Calendar calendar = Calendar.getInstance();
 
         final Intent intent = getIntent();
+        haveInternet = intent.getBooleanExtra("connected", true);
         userStatus = intent.getStringExtra("userStatus");
         editorCode = intent.getStringExtra("editorCode");
 
@@ -360,10 +361,34 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         String[] array = getResources().getStringArray(R.array.subjects);
         adapter =new ArrayAdapter<CharSequence>(this, R.layout.spinner_item, array);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         for (int i = 0; i < sp.length; i++) {
             sp[i].setAdapter(adapter);
         }
-        loadText();
+
+
+        /**Esperemental*/
+        for (int i = 0; i < et.length; i ++){
+            etPref = getSharedPreferences("et"+i, MODE_PRIVATE);
+            et[i].setText(etPref.getString("et"+i, ""));
+        }
+        for (int i = 0; i < zs.length; i ++){
+            etPref = getSharedPreferences("zs"+i, MODE_PRIVATE);
+            zs[i].setText(etPref.getString("zs"+i, ""));
+        }
+        for (int i = 0; i < sp.length; i ++){
+            etPref = getSharedPreferences("sp"+i, MODE_PRIVATE);
+            sp[i].setSelection(Integer.parseInt(etPref.getString("sp"+i, "0")));
+        }
+        /**Experemental */
+
+
+        if (!haveInternet){
+            userStatus = "guest";
+            setSupportActionBar(toolbar);
+        }
+            loadText();
+
 
         for (int i = 0; i < zs.length; i++) {
             zs[i].setTextSize(25);
@@ -906,6 +931,17 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                    lvfiles.setAdapter(null);
                    isDownloadedImages = true;
                }
+                SharedPreferences.Editor sharedEditor = etPref.edit();
+               for (int i = 0; i < et.length; i++){
+                    sharedEditor.putString("et"+i, et[i].getText().toString());
+               }
+                for (int i = 0; i < sp.length; i++){
+                    sharedEditor.putString("sp"+i, Integer.toString(sp[i].getSelectedItemPosition()));
+                }
+                for (int i = 0; i < zs.length; i++){
+                    sharedEditor.putString("zs"+i, zs[i].getText().toString());
+                }
+
             }
 
             @Override
