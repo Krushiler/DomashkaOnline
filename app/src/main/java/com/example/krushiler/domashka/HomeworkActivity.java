@@ -12,6 +12,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.icu.util.Calendar;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -49,8 +51,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.krushiler.domashka.Swipes.OnSwipeTouchListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -76,6 +81,68 @@ import java.util.Map;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+
+    public class CheckConnectionThread extends Thread {
+        @Override
+        public void run() {
+            while(true) {
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+                ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                    if (!haveInternet) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                haveInternet = true;
+                                mAuth = FirebaseAuth.getInstance();
+                                mAuth.signInWithEmailAndPassword(mail + "@li1irk.ru", "li1irk").addOnCompleteListener(HomeworkActivity.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        loadText();
+                                        toolbar.setTitleTextColor(Color.rgb(0, 0, 0));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }else{
+                    if (haveInternet){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                haveInternet = false;
+                                userStatus = "guest";
+                                setSupportActionBar(toolbar);
+                                toolbar.setTitleTextColor(Color.RED);
+                                for (int i = 0; i < sp.length; i++) {
+                                    sp[i].setEnabled(false);
+                                    sp[i].setOnTouchListener(ons);
+                                    sp[i].setOnTouchListener(ons);
+                                }
+                                for (int i = 0; i < et.length; i++) {
+                                    et[i].setEnabled(false);
+                                    et[i].setTextColor(Color.BLACK);
+                                    et[i].setOnTouchListener(ons);
+                                }
+                                for (int i = 0; i < zs.length; i++) {
+                                    zs[i].setEnabled(false);
+                                    zs[i].setTextColor(Color.BLACK);
+                                }
+                                addPhotoBtn.setVisibility(View.GONE);
+                            }
+                        });
+
+                    }
+                }
+            }
+        }
+    }
+
     LinearLayout ponl, vtl, srl, chtl, ptl, sbl, linear, raspisanie, zvonkilay, fileslay;
     ScrollView mainScrollView;
     LinearLayout[] layouts = new LinearLayout[8];
@@ -139,11 +206,11 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
     String userStatus = "guest";
 
-    String editorCode;
+    String editorCode, mail;
 
     ImageListAdapter imageListAdapter;
 
-    boolean haveInternet = false;
+    boolean haveInternet = true;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -157,6 +224,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         haveInternet = intent.getBooleanExtra("connected", true);
         userStatus = intent.getStringExtra("userStatus");
         editorCode = intent.getStringExtra("editorCode");
+        mail = intent.getStringExtra("mail");
 
         //if(themeSP.getString("theme", "green")=="green"){
 
@@ -366,26 +434,43 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
             sp[i].setAdapter(adapter);
         }
 
+        etPref = getSharedPreferences("Prefs", MODE_PRIVATE);
 
         /**Esperemental*/
         for (int i = 0; i < et.length; i ++){
-            etPref = getSharedPreferences("et"+i, MODE_PRIVATE);
-            et[i].setText(etPref.getString("et"+i, ""));
+            et[i].setText(etPref.getString("etPref"+i, ""));
         }
         for (int i = 0; i < zs.length; i ++){
-            etPref = getSharedPreferences("zs"+i, MODE_PRIVATE);
-            zs[i].setText(etPref.getString("zs"+i, ""));
+            zs[i].setText(etPref.getString("zsPref"+i, ""));
         }
         for (int i = 0; i < sp.length; i ++){
-            etPref = getSharedPreferences("sp"+i, MODE_PRIVATE);
-            sp[i].setSelection(Integer.parseInt(etPref.getString("sp"+i, "0")));
+            sp[i].setSelection(etPref.getInt("spPref"+i, 0));
         }
         /**Experemental */
 
+        Thread thread = new CheckConnectionThread();
+        thread.start();
 
         if (!haveInternet){
             userStatus = "guest";
             setSupportActionBar(toolbar);
+            toolbar.setTitleTextColor(Color.RED);
+
+            for (int i = 0; i < sp.length; i++) {
+                sp[i].setEnabled(false);
+                sp[i].setOnTouchListener(ons);
+                sp[i].setOnTouchListener(ons);
+            }
+            for (int i = 0; i < et.length; i++) {
+                et[i].setEnabled(false);
+                et[i].setTextColor(Color.BLACK);
+                et[i].setOnTouchListener(ons);
+            }
+            for (int i = 0; i < zs.length; i++) {
+                zs[i].setEnabled(false);
+                zs[i].setTextColor(Color.BLACK);
+            }
+            addPhotoBtn.setVisibility(View.GONE);
         }
             loadText();
 
@@ -858,98 +943,109 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
     }
 
     private void loadText() {
+        if (haveInternet) {
+            valueEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String s = ((CharSequence) dataSnapshot.child("EditorCode").getValue()).toString();
 
-        valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String s = ((CharSequence)dataSnapshot.child("EditorCode").getValue()).toString();
+                    if (editorCode.equals(s)) {
+                        userStatus = "editor";
+                        for (int i = 0; i < sp.length; i++) {
+                            sp[i].setEnabled(true);
+                        }
+                        for (int i = 0; i < et.length; i++) {
+                            et[i].setEnabled(true);
+                            et[i].setTextColor(Color.BLACK);
+                        }
+                        for (int i = 0; i < zs.length; i++) {
+                            zs[i].setEnabled(true);
+                        }
+                        addPhotoBtn.setVisibility(View.VISIBLE);
+                    } else {
+                        userStatus = "guest";
+                        for (int i = 0; i < sp.length; i++) {
+                            sp[i].setEnabled(false);
+                            sp[i].setOnTouchListener(ons);
+                            sp[i].setOnTouchListener(ons);
+                        }
+                        for (int i = 0; i < et.length; i++) {
+                            et[i].setEnabled(false);
+                            et[i].setTextColor(Color.BLACK);
+                            et[i].setOnTouchListener(ons);
+                        }
+                        for (int i = 0; i < zs.length; i++) {
+                            zs[i].setEnabled(false);
+                            zs[i].setTextColor(Color.BLACK);
+                        }
+                        addPhotoBtn.setVisibility(View.GONE);
+                    }
+                    setSupportActionBar(toolbar);
+                    for (int i = 0; i < et.length; i++) {
+                        homeworkstr[i] = (String) dataSnapshot.child("Homework" + i).getValue();
+                        et[i].setText(homeworkstr[i]);
+                    }
+                    for (int i = 0; i < sp.length; i++) {
+                        if (dataSnapshot.child("Subjects" + i).getValue(Integer.class) != null) {
+                            int position = dataSnapshot.child("Subjects" + i).getValue(Integer.class);
+                            spinnerint[i] = position;
+                            sp[i].setSelection(position);
+                        }
+                    }
+                    for (int i = 0; i < zs.length; i++) {
+                        if ((CharSequence) dataSnapshot.child("time" + i).getValue() != "") {
+                            timestr[i] = (String) dataSnapshot.child("time" + i).getValue();
+                            zs[i].setText(timestr[i]);
+                        } else {
+                            zs[i].setText("-|-");
+                        }
+                    }
+                    for (int i = 0; i < zs.length; i++) {
+                        if (zs[i].getText().toString().equals("") || zs[i].getText().toString().equals(" ")) {
+                            zs[i].setText("-|-");
+                        }
+                    }
+                    if (dataSnapshot.child("stringList").getValue() != null) {
+                        stringList = (List<String>) dataSnapshot.child("stringList").getValue();
+                    }
+                    if (dataSnapshot.child("fileList").getValue() != null) {
+                        fileList = (List<String>) dataSnapshot.child("fileList").getValue();
+                        isDownloadedImages = true;
+                        lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList));
+                        lvfiles.setItemsCanFocus(true);
+                    } else {
+                        lvfiles.setAdapter(null);
+                        isDownloadedImages = true;
+                    }
+                    if (haveInternet) {
+                        SharedPreferences.Editor eted;
 
-                if (editorCode.equals(s)){
-                    userStatus = "editor";
-                    for (int i = 0; i < sp.length; i ++){
-                        sp[i].setEnabled(true);
+                        for (int i = 0; i < et.length; i++) {
+                            eted = etPref.edit();
+                            eted.putString("etPref" + i, et[i].getText().toString());
+                            eted.commit();
+                        }
+                        for (int i = 0; i < sp.length; i++) {
+                            eted = etPref.edit();
+                            eted.putInt("spPref" + i, sp[i].getSelectedItemPosition());
+                            eted.commit();
+                        }
+                        for (int i = 0; i < zs.length; i++) {
+                            eted = etPref.edit();
+                            eted.putString("szsPref" + i, zs[i].getText().toString());
+                            eted.commit();
+                        }
                     }
-                    for (int i = 0; i < et.length; i ++){
-                        et[i].setEnabled(true);
-                        et[i].setTextColor(Color.BLACK);
-                    }
-                    for (int i = 0; i < zs.length; i ++){
-                        zs[i].setEnabled(true);
-                    }
-                    addPhotoBtn.setVisibility(View.VISIBLE);
-                }else{
-                    userStatus = "guest";
-                    for (int i = 0; i < sp.length; i ++){
-                        sp[i].setEnabled(false);
-                        sp[i].setOnTouchListener(ons);
-                        sp[i].setOnTouchListener(ons);
-                    }
-                    for (int i = 0; i < et.length; i ++){
-                        et[i].setEnabled(false);
-                        et[i].setTextColor(Color.BLACK);
-                        et[i].setOnTouchListener(ons);
-                    }
-                    for (int i = 0; i < zs.length; i ++){
-                        zs[i].setEnabled(false);
-                        zs[i].setTextColor(Color.BLACK);
-                    }
-                    addPhotoBtn.setVisibility(View.GONE);
-                }
-                setSupportActionBar(toolbar);
-                for (int i = 0; i < et.length; i++) {
-                    homeworkstr[i] = (String) dataSnapshot.child("Homework" + i).getValue();
-                    et[i].setText(homeworkstr[i]);
-                }
-                for (int i = 0; i < sp.length; i++) {
-                    if (dataSnapshot.child("Subjects" + i).getValue(Integer.class)!=null) {
-                        int position = dataSnapshot.child("Subjects" + i).getValue(Integer.class);
-                        spinnerint[i] = position;
-                        sp[i].setSelection(position);
-                    }
-                }
-                for (int i = 0; i < zs.length; i++) {
-                    if ((CharSequence) dataSnapshot.child("time" + i).getValue() != "") {
-                        timestr[i] = (String) dataSnapshot.child("time" + i).getValue();
-                        zs[i].setText(timestr[i]);
-                    }else{
-                        zs[i].setText("-|-");
-                    }
-                }for (int i = 0; i < zs.length; i++){
-                    if (zs[i].getText().toString().equals("") || zs[i].getText().toString().equals(" ")){
-                        zs[i].setText("-|-");
-                    }
-                }
-                if(dataSnapshot.child("stringList").getValue()!=null) {
-                    stringList = (List<String>) dataSnapshot.child("stringList").getValue();
-                }
-               if(dataSnapshot.child("fileList").getValue()!=null) {
-                   fileList = (List<String>) dataSnapshot.child("fileList").getValue();
-                   isDownloadedImages = true;
-                   lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList));
-                   lvfiles.setItemsCanFocus(true);
-               }else {
-                   lvfiles.setAdapter(null);
-                   isDownloadedImages = true;
-               }
-                SharedPreferences.Editor sharedEditor = etPref.edit();
-               for (int i = 0; i < et.length; i++){
-                    sharedEditor.putString("et"+i, et[i].getText().toString());
-               }
-                for (int i = 0; i < sp.length; i++){
-                    sharedEditor.putString("sp"+i, Integer.toString(sp[i].getSelectedItemPosition()));
-                }
-                for (int i = 0; i < zs.length; i++){
-                    sharedEditor.putString("zs"+i, zs[i].getText().toString());
+
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        userRef.addValueEventListener(valueEventListener);
+                }
+            };
+            userRef.addValueEventListener(valueEventListener);
+        }
     }
     @Override
     protected void onStop() {
@@ -1250,6 +1346,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                 sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
                 SharedPreferences.Editor editorEditor = sharedPreferencesEditor.edit();
                 editorEditor.putString("editor", input.getText().toString());
+                editorEditor.commit();
             }
         });
         builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {

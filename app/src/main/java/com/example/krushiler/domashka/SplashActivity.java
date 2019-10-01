@@ -35,6 +35,11 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
+        sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
+        mail = sharedPreferencesEmail.getString("email", "");
+        edit = sharedPreferencesEditor.getString("editor", "");
+
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
@@ -42,10 +47,7 @@ public class SplashActivity extends AppCompatActivity {
             connected = true;
             mAuth = FirebaseAuth.getInstance();
 
-            sharedPreferencesEmail = getSharedPreferences("emailPref", MODE_PRIVATE);
-            sharedPreferencesEditor = getSharedPreferences("editorPref", MODE_PRIVATE);
-            mail = sharedPreferencesEmail.getString("email", "");
-            edit = sharedPreferencesEditor.getString("editor", "");
+
 
             if (mail!=null && mail!=""){
                 signin(mail, pass);
@@ -60,6 +62,8 @@ public class SplashActivity extends AppCompatActivity {
             connected = false;
             Intent intent = new Intent(SplashActivity.this, HomeworkActivity.class);
             intent.putExtra("connected", connected);
+            intent.putExtra("email", mail);
+            intent.putExtra("editorCode", edit);
             startActivity(intent);
             finish();
         }
@@ -88,6 +92,7 @@ public class SplashActivity extends AppCompatActivity {
                     editorEditor.commit();
                     Intent intent = new Intent(SplashActivity.this, HomeworkActivity.class);
                     intent.putExtra("connected", connected);
+                    intent.putExtra("email", mail);
                     intent.putExtra("editorCode", edit);
                     startActivity(intent);
                     finish();
