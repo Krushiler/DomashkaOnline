@@ -121,13 +121,12 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                                 toolbar.setTitleTextColor(Color.RED);
                                 for (int i = 0; i < sp.length; i++) {
                                     sp[i].setEnabled(false);
-                                    sp[i].setOnTouchListener(ons);
-                                    sp[i].setOnTouchListener(ons);
+                                    //sp[i].setOnTouchListener(ons);
                                 }
                                 for (int i = 0; i < et.length; i++) {
                                     et[i].setEnabled(false);
                                     et[i].setTextColor(Color.BLACK);
-                                    et[i].setOnTouchListener(ons);
+                                    //et[i].setOnTouchListener(ons);
                                 }
                                 for (int i = 0; i < zs.length; i++) {
                                     zs[i].setEnabled(false);
@@ -458,13 +457,12 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
             for (int i = 0; i < sp.length; i++) {
                 sp[i].setEnabled(false);
-                sp[i].setOnTouchListener(ons);
-                sp[i].setOnTouchListener(ons);
+                //sp[i].setOnTouchListener(ons);
             }
             for (int i = 0; i < et.length; i++) {
                 et[i].setEnabled(false);
                 et[i].setTextColor(Color.BLACK);
-                et[i].setOnTouchListener(ons);
+                //et[i].setOnTouchListener(ons);
             }
             for (int i = 0; i < zs.length; i++) {
                 zs[i].setEnabled(false);
@@ -828,7 +826,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         if(id==R.id.oproge){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("О программе");
-            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.3.2");
+            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.3.5");
             alertDialog.setPositiveButton("Закрыть", null);
             alertDialog.show();
         }
@@ -966,13 +964,12 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                         userStatus = "guest";
                         for (int i = 0; i < sp.length; i++) {
                             sp[i].setEnabled(false);
-                            sp[i].setOnTouchListener(ons);
-                            sp[i].setOnTouchListener(ons);
+                            //sp[i].setOnTouchListener(ons);
                         }
                         for (int i = 0; i < et.length; i++) {
                             et[i].setEnabled(false);
                             et[i].setTextColor(Color.BLACK);
-                            et[i].setOnTouchListener(ons);
+                            //et[i].setOnTouchListener(ons);
                         }
                         for (int i = 0; i < zs.length; i++) {
                             zs[i].setEnabled(false);
