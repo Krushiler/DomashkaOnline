@@ -435,7 +435,6 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
         etPref = getSharedPreferences("Prefs", MODE_PRIVATE);
 
-        /**Esperemental*/
         for (int i = 0; i < et.length; i ++){
             et[i].setText(etPref.getString("etPref"+i, ""));
         }
@@ -445,7 +444,6 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         for (int i = 0; i < sp.length; i ++){
             sp[i].setSelection(etPref.getInt("spPref"+i, 0));
         }
-        /**Experemental */
 
         Thread thread = new CheckConnectionThread();
         thread.start();
@@ -539,6 +537,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                     }
                 }
             }
+        /**Experemental */
             else if(n==5){
                 bpn.setText("ЧТ");
                 bvt.setText("ПТ");
@@ -1029,7 +1028,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                         }
                         for (int i = 0; i < zs.length; i++) {
                             eted = etPref.edit();
-                            eted.putString("szsPref" + i, zs[i].getText().toString());
+                            eted.putString("zsPref" + i, zs[i].getText().toString());
                             eted.commit();
                         }
                     }
