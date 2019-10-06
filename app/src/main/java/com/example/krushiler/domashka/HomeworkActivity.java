@@ -16,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -66,12 +67,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -190,6 +194,9 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
     private List<String> databaseHomework;
     private List<Integer> databaseSubjects;
     private List<String> databaseTime;
+    String storageReferenceString;
+    FileCache fileCache = new FileCache(this);
+    File cacheDir;
 
     boolean isOnRings = false;
     int currDay = 0;
@@ -230,6 +237,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         //}else{
 
         //}
+
+        cacheDir = getBaseContext().getCacheDir();
 
         myRef = FirebaseDatabase.getInstance().getReference();
         userRef = myRef.child(user.getUid());
@@ -422,7 +431,13 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
+
         imagesRef = storageReference.child("images");
+
+        fileList = getArrayList("fileList");
+        stringList = getArrayList("stringList");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        storageReferenceString = prefs.getString("storageReference", "");
 
         int n = calendar.get(Calendar.DAY_OF_WEEK);
         String[] array = getResources().getStringArray(R.array.subjects);
@@ -444,6 +459,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         for (int i = 0; i < sp.length; i ++){
             sp[i].setSelection(etPref.getInt("spPref"+i, 0));
         }
+
+        lvfiles.setAdapter(new ImageListAdapterOffline(HomeworkActivity.this, fileList, stringList, storageReferenceString));
 
         Thread thread = new CheckConnectionThread();
         thread.start();
@@ -468,7 +485,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
             }
             addPhotoBtn.setVisibility(View.GONE);
         }
-            loadText();
+        loadText();
 
 
         for (int i = 0; i < zs.length; i++) {
@@ -537,7 +554,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                     }
                 }
             }
-        /**Experemental */
+            /**Experemental */
             else if(n==5){
                 bpn.setText("ЧТ");
                 bvt.setText("ПТ");
@@ -675,17 +692,17 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                 }else {
 
 
-                ImageView img= (ImageView)view.findViewById(R.id.imageforlist);
-                Bitmap bitmap=((BitmapDrawable)img.getDrawable()).getBitmap();
-                TextView tempTextView = (TextView) view.findViewById(R.id.tvforlist);
-                textViewForShow.setText(tempTextView.getText().toString());
+                    ImageView img= (ImageView)view.findViewById(R.id.imageforlist);
+                    Bitmap bitmap=((BitmapDrawable)img.getDrawable()).getBitmap();
+                    TextView tempTextView = (TextView) view.findViewById(R.id.tvforlist);
+                    textViewForShow.setText(tempTextView.getText().toString());
 
-                onClickDaysButtons();
-                mainScrollView.setVisibility(View.GONE);
-                linear.setVisibility(View.GONE);
-                layoutForShow.setVisibility(View.VISIBLE);
-                imageViewForShow.setImageBitmap(bitmap);
-                mAttacher.update();
+                    onClickDaysButtons();
+                    mainScrollView.setVisibility(View.GONE);
+                    linear.setVisibility(View.GONE);
+                    layoutForShow.setVisibility(View.VISIBLE);
+                    imageViewForShow.setImageBitmap(bitmap);
+                    mAttacher.update();
                 }
             }
         });
@@ -782,7 +799,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                             myRef.child(user.getUid()).child("fileList").setValue(fileList);
                             myRef.child(user.getUid()).child("stringList").setValue(stringList);
                             userRef.addValueEventListener(valueEventListener);
-                            lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList));
+                            lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList, getApplicationContext()));
                             lvfiles.setItemsCanFocus(true);
                             isDeletedImage = true;
                         }
@@ -933,10 +950,10 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                 }
             }
         }
-       myRef.child(user.getUid()).child("fileList").setValue(fileList);
-       for (int i = 0; i < fileList.size(); i++){
-           Log.d("fileList", fileList.get(i));
-       }
+        myRef.child(user.getUid()).child("fileList").setValue(fileList);
+        for (int i = 0; i < fileList.size(); i++){
+            Log.d("fileList", fileList.get(i));
+        }
     }
 
     private void loadText() {
@@ -1007,7 +1024,18 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                     if (dataSnapshot.child("fileList").getValue() != null) {
                         fileList = (List<String>) dataSnapshot.child("fileList").getValue();
                         isDownloadedImages = true;
-                        lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList));
+                        saveArrayList(stringList, "stringList");
+                        saveArrayList(fileList, "fileList");
+                        storageReferenceString = storageReference.toString();
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        SharedPreferences.Editor prefsEd = prefs.edit();
+                        prefsEd.putString("storageReference", storageReferenceString);
+                        for (int i = 0; i < fileList.size(); i ++){
+                            StorageReference imageRef = storageReference.child(fileList.get(i));
+
+                            File file = getCacheDir();
+                        }
+                        lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList, getApplicationContext()));
                         lvfiles.setItemsCanFocus(true);
                     } else {
                         lvfiles.setAdapter(null);
@@ -1374,5 +1402,21 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
             linear.setVisibility(View.GONE);
         }
         rl.setVisibility(View.VISIBLE);
+    }
+    public void saveArrayList(List<String> list, String key){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        editor.putString(key, json);
+        editor.apply();     // This line is IMPORTANT !!!
+    }
+
+    public List<String> getArrayList(String key){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Gson gson = new Gson();
+        String json = prefs.getString(key, null);
+        Type type = new TypeToken<ArrayList<String>>() {}.getType();
+        return gson.fromJson(json, type);
     }
 }
