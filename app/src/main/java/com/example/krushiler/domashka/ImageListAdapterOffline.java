@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,15 +32,13 @@ public class ImageListAdapterOffline extends ArrayAdapter {
     private List<String> imageUrls;
     private List<String> description;
     FileCache fileCache;
-    String storageReference;
 
-    public ImageListAdapterOffline(Context context, List<String> imageUrls, List<String> description, String storageReference1) {
+    public ImageListAdapterOffline(Context context, List<String> imageUrls, List<String> description) {
         super(context, R.layout.imagelistmain, imageUrls);
         this.context = context;
         this.imageUrls = imageUrls;
         this.description = description;
         inflater = LayoutInflater.from(context);
-        storageReference = storageReference1;
     }
 
     @Override
@@ -49,8 +48,9 @@ public class ImageListAdapterOffline extends ArrayAdapter {
             convertView = inflater.inflate(R.layout.imagelistmain, parent, false);
         }
         RequestOptions requestOptions = RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL);
+        Uri imageUri = Uri.fromFile(new File(context.getCacheDir()+"/"+imageUrls.get(position)+".jpg"));
         Glide.with(context)
-                .load(Uri.parse(imageUrls.get(position)))
+                .load(imageUri)
                 .onlyRetrieveFromCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .apply(requestOptions)

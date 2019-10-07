@@ -16,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -64,6 +65,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -459,8 +461,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         for (int i = 0; i < sp.length; i ++){
             sp[i].setSelection(etPref.getInt("spPref"+i, 0));
         }
-
-        lvfiles.setAdapter(new ImageListAdapterOffline(HomeworkActivity.this, fileList, stringList, storageReferenceString));
+        if (fileList!=null)
+        lvfiles.setAdapter(new ImageListAdapterOffline(HomeworkActivity.this, fileList, stringList));
 
         Thread thread = new CheckConnectionThread();
         thread.start();
@@ -1030,12 +1032,25 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         SharedPreferences.Editor prefsEd = prefs.edit();
                         prefsEd.putString("storageReference", storageReferenceString);
+                        Log.d("storTag", Integer.toString(fileList.size()));
                         for (int i = 0; i < fileList.size(); i ++){
                             StorageReference imageRef = storageReference.child(fileList.get(i));
-
                             File file = getCacheDir();
+                            try {
+                                file = File.createTempFile(fileList.get(i), ".jpg", HomeworkActivity.this.getCacheDir());
+                                Log.d("storTag", file.getAbsolutePath());
+
+                                imageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+
+                                    }
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList, getApplicationContext()));
+                        lvfiles.setAdapter(new ImageListAdapterOffline(HomeworkActivity.this, fileList, stringList));
                         lvfiles.setItemsCanFocus(true);
                     } else {
                         lvfiles.setAdapter(null);
