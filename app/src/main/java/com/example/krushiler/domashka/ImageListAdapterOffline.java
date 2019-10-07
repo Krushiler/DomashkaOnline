@@ -47,16 +47,14 @@ public class ImageListAdapterOffline extends ArrayAdapter {
         if (null == convertView) {
             convertView = inflater.inflate(R.layout.imagelistmain, parent, false);
         }
-        RequestOptions requestOptions = RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL);
-        Uri imageUri = Uri.fromFile(new File(context.getCacheDir()+"/"+imageUrls.get(position)+".jpg"));
+        Uri imageUri = Uri.fromFile(new File(context.getCacheDir()+"/"+imageUrls.get(position)));
+        Log.d( "strg",imageUri.getPath() + "_______________" + position);
         Glide.with(context)
                 .load(imageUri)
-                .onlyRetrieveFromCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .apply(requestOptions)
                 .error(R.drawable.rubbish_bin)
                 .into((ImageView) convertView.findViewById(R.id.imageforlist));
-        Log.d("strg", imageUrls.get(position));
+
         TextView tv = (TextView) convertView.findViewById(R.id.tvforlist);
         if(description!=null){tv.setText(description.get(position));}
         return convertView;

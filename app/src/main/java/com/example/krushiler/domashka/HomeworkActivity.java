@@ -823,6 +823,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                 }
             });
             alertDialog.show();
+            loadText();
         }else{
             Toast.makeText(getApplicationContext(), "Удаление предыдущего файла", Toast.LENGTH_SHORT).show();
         }
@@ -949,7 +950,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                     myRef.child(user.getUid()).child("time" + i).setValue("-|-");
                 } else {
                     myRef.child(user.getUid()).child("time" + i).setValue(zs[i].getText().toString());
-                }
+                 }
             }
         }
         myRef.child(user.getUid()).child("fileList").setValue(fileList);
@@ -1033,25 +1034,32 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                         SharedPreferences.Editor prefsEd = prefs.edit();
                         prefsEd.putString("storageReference", storageReferenceString);
                         Log.d("storTag", Integer.toString(fileList.size()));
+                        trimCache(HomeworkActivity.this);
                         for (int i = 0; i < fileList.size(); i ++){
                             StorageReference imageRef = storageReference.child(fileList.get(i));
                             File file = getCacheDir();
                             try {
-                                file = File.createTempFile(fileList.get(i), ".jpg", HomeworkActivity.this.getCacheDir());
-                                Log.d("storTag", file.getAbsolutePath());
+                                file = File.createTempFile("image", ".jpg", HomeworkActivity.this.getCacheDir());
+
+                                final File finalFile = file;
+                                final int finalI = i;
 
                                 imageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                                     @Override
                                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                        fileList.set(finalI, Uri.parse(finalFile.getAbsolutePath()).getLastPathSegment().toString());
+                                        saveArrayList(fileList, "fileList");
+                                        Log.d("strg", Uri.parse(finalFile.getAbsolutePath()).getLastPathSegment().toString());
 
+                                        lvfiles.setAdapter(new ImageListAdapterOffline(HomeworkActivity.this, fileList, stringList));
+                                        lvfiles.setItemsCanFocus(true);
                                     }
                                 });
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+
                         }
-                        lvfiles.setAdapter(new ImageListAdapterOffline(HomeworkActivity.this, fileList, stringList));
-                        lvfiles.setItemsCanFocus(true);
                     } else {
                         lvfiles.setAdapter(null);
                         isDownloadedImages = true;
@@ -1085,6 +1093,30 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
             };
             userRef.addValueEventListener(valueEventListener);
         }
+    }
+    public static void trimCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        // The directory is now empty so delete it
+        return dir.delete();
     }
     @Override
     protected void onStop() {
@@ -1329,7 +1361,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                     Uri uri1 = null;
                     if (data != null) {
                         uri1 = data.getData();
-                        String uri = "images/" + uri1.getLastPathSegment().toString();
+                        String uri = uri1.getLastPathSegment().toString();
                         uri = retries(uri);
                         Log.i("PickedImage", "Uri: " + uri);
                         imagesRef = storageReference.child(uri);
@@ -1344,7 +1376,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 userRef.removeEventListener(valueEventListener);
-                                fileList.add(finaluriString);
+                                fileList.add(finalUri.getLastPathSegment());
                                 stringList.add(sol[0]);
                                 myRef.child(user.getUid()).child("stringList").setValue(stringList);
                                 myRef.child(user.getUid()).child("fileList").setValue(fileList);
