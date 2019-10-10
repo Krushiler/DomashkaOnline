@@ -164,6 +164,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
     boolean isOnTimeLayout = false;
     List<String> fileList = new ArrayList<String>();
     List<String> stringList = new ArrayList<String>();
+    List<String> files = new ArrayList<String>();
     ListView lvfiles;
     View viewForPopup;
     ValueEventListener valueEventListener;
@@ -435,9 +436,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         storageReference = firebaseStorage.getReference();
 
         imagesRef = storageReference.child("images");
-
-        fileList = getArrayList("fileList");
-        stringList = getArrayList("stringList");
+            fileList = getArrayList("fileList");
+            stringList = getArrayList("stringList");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         storageReferenceString = prefs.getString("storageReference", "");
 
@@ -461,9 +461,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         for (int i = 0; i < sp.length; i ++){
             sp[i].setSelection(etPref.getInt("spPref"+i, 0));
         }
-        if (fileList!=null)
-        lvfiles.setAdapter(new ImageListAdapterOffline(HomeworkActivity.this, fileList, stringList));
-
+            if (fileList != null)
+                lvfiles.setAdapter(new ImageListAdapterOffline(HomeworkActivity.this, fileList, stringList));
         Thread thread = new CheckConnectionThread();
         thread.start();
 
@@ -790,15 +789,18 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                 public void onClick(DialogInterface dialog, int which) {
                     isDeletedImage = false;
                     lvfiles.setItemsCanFocus(false);
-                    StorageReference deleteRef = storageReference.child(fileList.get(finalfinalposition));
+                    StorageReference deleteRef = storageReference.child(files.get(finalfinalposition));
                     final int finalposition = finalfinalposition;
                     deleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             fileList.remove(finalposition);
+                            if  (files.size()!=0) {
+                                files.remove(finalposition);
+                            }
                             stringList.remove(finalposition);
                             userRef.removeEventListener(valueEventListener);
-                            myRef.child(user.getUid()).child("fileList").setValue(fileList);
+                            myRef.child(user.getUid()).child("fileList").setValue(files);
                             myRef.child(user.getUid()).child("stringList").setValue(stringList);
                             userRef.addValueEventListener(valueEventListener);
                             lvfiles.setAdapter(new ImageListAdapter(HomeworkActivity.this, fileList, storageReference, stringList, getApplicationContext()));
@@ -953,7 +955,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                  }
             }
         }
-        myRef.child(user.getUid()).child("fileList").setValue(fileList);
+        myRef.child(user.getUid()).child("fileList").setValue(files);
         for (int i = 0; i < fileList.size(); i++){
             Log.d("fileList", fileList.get(i));
         }
@@ -1022,10 +1024,19 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                         }
                     }
                     if (dataSnapshot.child("stringList").getValue() != null) {
+                        stringList = new ArrayList<String>();
                         stringList = (List<String>) dataSnapshot.child("stringList").getValue();
+                        saveArrayList((List<String>) dataSnapshot.child("stringList").getValue(), "stringList");
+                    }else{
+                        stringList = new ArrayList<String>();
                     }
-                    if (dataSnapshot.child("fileList").getValue() != null) {
+                    if( (List<String>) dataSnapshot.child("fileList").getValue()!=null){
+                        files = (List<String>) dataSnapshot.child("fileList").getValue();
+                    }
+                    if( (List<String>) dataSnapshot.child("fileList").getValue()!=null){
                         fileList = (List<String>) dataSnapshot.child("fileList").getValue();
+                    }
+                    if ((List<String>) dataSnapshot.child("fileList").getValue() != null) {
                         isDownloadedImages = true;
                         saveArrayList(stringList, "stringList");
                         saveArrayList(fileList, "fileList");
@@ -1034,9 +1045,11 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                         SharedPreferences.Editor prefsEd = prefs.edit();
                         prefsEd.putString("storageReference", storageReferenceString);
                         Log.d("storTag", Integer.toString(fileList.size()));
+                        Log.d("storTag", files.get(0));
                         trimCache(HomeworkActivity.this);
-                        for (int i = 0; i < fileList.size(); i ++){
-                            StorageReference imageRef = storageReference.child(fileList.get(i));
+                        for (int i = 0; i < files.size(); i ++){
+                            StorageReference imageRef = storageReference.child(files.get(i));
+                            Log.d("strg", imageRef.toString());
                             File file = getCacheDir();
                             try {
                                 file = File.createTempFile("image", ".jpg", HomeworkActivity.this.getCacheDir());
@@ -1047,6 +1060,9 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                                 imageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                                     @Override
                                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                        /*if (finalI == 0){
+                                            trimCache(HomeworkActivity.this);
+                                        }*/
                                         fileList.set(finalI, Uri.parse(finalFile.getAbsolutePath()).getLastPathSegment().toString());
                                         saveArrayList(fileList, "fileList");
                                         Log.d("strg", Uri.parse(finalFile.getAbsolutePath()).getLastPathSegment().toString());
@@ -1061,6 +1077,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
                         }
                     } else {
+                        fileList = new ArrayList<String>();
+                        files = new ArrayList<String>();
                         lvfiles.setAdapter(null);
                         isDownloadedImages = true;
                     }
@@ -1321,9 +1339,11 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
     public boolean listContains(String uri){
         String search = uri;
-        for(String str: fileList) {
-            if(str.trim().contains(search))
-                return true;
+        if (files!=null) {
+            for (String str : files) {
+                if (str.trim().contains(search))
+                    return true;
+            }
         }
         return false;
     }
@@ -1376,10 +1396,20 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 userRef.removeEventListener(valueEventListener);
+                                if (fileList==null){
+                                    fileList = new ArrayList<String>();
+                                }
+                                if (stringList==null){
+                                    stringList = new ArrayList<String>();
+                                }
+                                if (files==null){
+                                    files = new ArrayList<String>();
+                                }
                                 fileList.add(finalUri.getLastPathSegment());
+                                files.add(finalUri.getLastPathSegment());
                                 stringList.add(sol[0]);
                                 myRef.child(user.getUid()).child("stringList").setValue(stringList);
-                                myRef.child(user.getUid()).child("fileList").setValue(fileList);
+                                myRef.child(user.getUid()).child("fileList").setValue(files);
                                 userRef.addValueEventListener(valueEventListener);
                                 isDownloadedImages = true;
                             }
