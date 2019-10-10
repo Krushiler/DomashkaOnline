@@ -825,7 +825,6 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                 }
             });
             alertDialog.show();
-            loadText();
         }else{
             Toast.makeText(getApplicationContext(), "Удаление предыдущего файла", Toast.LENGTH_SHORT).show();
         }
@@ -847,7 +846,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         if(id==R.id.oproge){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("О программе");
-            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.4");
+            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.5");
             alertDialog.setPositiveButton("Закрыть", null);
             alertDialog.show();
         }
@@ -1036,6 +1035,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                     if( (List<String>) dataSnapshot.child("fileList").getValue()!=null){
                         fileList = (List<String>) dataSnapshot.child("fileList").getValue();
                     }
+                    trimCache(HomeworkActivity.this);
                     if ((List<String>) dataSnapshot.child("fileList").getValue() != null) {
                         isDownloadedImages = true;
                         saveArrayList(stringList, "stringList");
@@ -1046,7 +1046,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                         prefsEd.putString("storageReference", storageReferenceString);
                         Log.d("storTag", Integer.toString(fileList.size()));
                         Log.d("storTag", files.get(0));
-                        trimCache(HomeworkActivity.this);
+
                         for (int i = 0; i < files.size(); i ++){
                             StorageReference imageRef = storageReference.child(files.get(i));
                             Log.d("strg", imageRef.toString());
@@ -1405,8 +1405,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                                 if (files==null){
                                     files = new ArrayList<String>();
                                 }
-                                fileList.add(finalUri.getLastPathSegment());
-                                files.add(finalUri.getLastPathSegment());
+                                fileList.add(finaluriString);
+                                files.add(finaluriString);
                                 stringList.add(sol[0]);
                                 myRef.child(user.getUid()).child("stringList").setValue(stringList);
                                 myRef.child(user.getUid()).child("fileList").setValue(files);
