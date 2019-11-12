@@ -2,12 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/openPhoto"
         android:title="Открыть"/>
-    <item android:id="@+id/changePhotoDes"
-        android:title="Изменить описание"
-        />
     <item android:id="@+id/savePhotoToGallery"
         android:title="Сохранить"
         />
-    <item android:id="@+id/deletePhoto"
-        android:title="Удалить" />
 </menu>

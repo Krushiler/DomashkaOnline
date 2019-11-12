@@ -1,5 +1,6 @@
 package com.example.krushiler.domashka;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -8,10 +9,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.icu.util.Calendar;
+import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -21,6 +24,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -78,15 +82,28 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+
+    private static final String[] REQUIRED_PERMISSIONS =
+            new String[] {
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            };
+
+
+
+    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
     public class CheckConnectionThread extends Thread {
         @Override
@@ -221,6 +238,16 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
     boolean haveInternet = true;
 
+    private static boolean hasPermissions(Context context, String... permissions) {
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(context, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,6 +255,10 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homework);
         Calendar calendar = Calendar.getInstance();
+
+        if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
+            requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
+        }
 
         final Intent intent = getIntent();
         haveInternet = intent.getBooleanExtra("connected", true);
@@ -685,15 +716,15 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         lvfiles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, final View view, final int position, long l) {
-                if(userStatus.equals("editor")) {
+//                if(userStatus.equals("editor")) {
                     positionOfImage = position;
                     viewForPopup = view;
                     showMenu(view);
 
-                }else {
+                /*}else {
 
 
-                    ImageView img= (ImageView)view.findViewById(R.id.imageforlist);
+                    *//*ImageView img= (ImageView)view.findViewById(R.id.imageforlist);
                     Bitmap bitmap=((BitmapDrawable)img.getDrawable()).getBitmap();
                     TextView tempTextView = (TextView) view.findViewById(R.id.tvforlist);
                     textViewForShow.setText(tempTextView.getText().toString());
@@ -703,8 +734,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
                     linear.setVisibility(View.GONE);
                     layoutForShow.setVisibility(View.VISIBLE);
                     imageViewForShow.setImageBitmap(bitmap);
-                    mAttacher.update();
-                }
+                    mAttacher.update();*//*
+                }*/
             }
         });
     }
@@ -714,7 +745,11 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
 
         // This activity implements OnMenuItemClickListener
         popup.setOnMenuItemClickListener(this);
-        popup.inflate(R.menu.popupmenuimage);
+        if (userStatus.equals("editor")) {
+            popup.inflate(R.menu.popupmenuimage);
+        }else{
+            popup.inflate(R.menu.popupmenuimagenonadmin);
+        }
         popup.show();
     }
     @Override
@@ -729,9 +764,40 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
             case R.id.changePhotoDes:
                 changePhoto();
                 return true;
+            case R.id.savePhotoToGallery:
+                savePhoto();
+                return true;
             default:
                 return false;
         }
+    }
+    public void savePhoto(){
+        ImageView img= (ImageView)viewForPopup.findViewById(R.id.imageforlist);
+        Bitmap bitmap=((BitmapDrawable)img.getDrawable()).getBitmap();
+        TextView tempTextView = (TextView) viewForPopup.findViewById(R.id.tvforlist);
+        Random r = new Random();
+        long n = r.nextLong();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "IMG_" + timeStamp;
+        MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, imageFileName, tempTextView.getText().toString());
+        /*String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Camera";
+        File myDir = new File(root);
+        myDir.mkdirs();
+        Random r = new Random();
+        long n = r.nextLong();
+        String fname = "Image" + Long.toString(n) + ".jpg";
+        Log.d("savePhoto", root);
+        File file = new File(myDir, fname);
+        if (file.exists()) file.delete();
+        Log.i("LOAD", root + fname);
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
     }
     public void openPhoto(){
         ImageView img= (ImageView)viewForPopup.findViewById(R.id.imageforlist);
@@ -830,6 +896,8 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         }
     }
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (userStatus.equals("editor")) {
@@ -846,7 +914,7 @@ public class HomeworkActivity extends AppCompatActivity implements PopupMenu.OnM
         if(id==R.id.oproge){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("О программе");
-            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.5");
+            alertDialog.setMessage("Данная программа является альтернативой бумажному дневнику для записи домашнего задания\n\n\nРазработчик: Лазарев Даниил\n Лицей-Интеренат №1 г.Иркутск\n\n\n\nbuild 1.6");
             alertDialog.setPositiveButton("Закрыть", null);
             alertDialog.show();
         }
